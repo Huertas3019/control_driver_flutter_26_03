@@ -1,0 +1,101 @@
+
+# Plano Completo de la Aplicación Flutter
+
+Esta es una descripción detallada de la arquitectura, la lógica y los componentes de la aplicación, diseñada para guiar una reconstrucción desde cero.
+
+---
+
+### 1. Dependencias del Proyecto (`pubspec.yaml`)
+
+La aplicación utiliza los siguientes paquetes clave:
+
+*   **Firebase:**
+    *   `firebase_core`: Requerido para inicializar la conexión con Firebase.
+    *   `cloud_firestore`: Para interactuar con la base de datos NoSQL de Firestore (guardar y leer datos).
+    *   `firebase_auth`: Para gestionar la autenticación de usuarios (login con email/contraseña y registro).
+    *   `firebase_storage`: Para almacenar archivos (no se usa activamente en el código que he visto, pero está presente).
+*   **Gestión de Estado:**
+    *   `provider`: Se usa para la gestión de estado a nivel de aplicación, específicamente para cambiar el tema (claro/oscuro) y el idioma.
+*   **Navegación:**
+    *   `go_router`: Gestiona toda la navegación de la aplicación de forma declarativa, incluyendo la protección de rutas basadas en el estado de autenticación.
+*   **UI y Utilidades:**
+    *   `google_fonts`: Para usar fuentes personalizadas de Google Fonts en la tematización de la app.
+    *   `intl`: Para formateo de fechas y números (implícito en el manejo de gastos y fechas).
+    *   `cupertino_icons`, `path_provider`, `share_plus`: Dependencias estándar y de utilidades.
+
+---
+
+### 2. Estructura del Proyecto y Lógica Principal
+
+La aplicación está estructurada de la siguiente manera:
+
+*   `lib/main.dart`: El punto de entrada. Contiene la configuración de `GoRouter`, los `Providers` de estado, la definición de los temas (claro y oscuro) y la lógica de autenticación principal.
+*   `lib/screens/`: Contiene las diferentes pantallas (vistas) de la aplicación.
+*   `lib/widgets/`: Contiene widgets reutilizables, como los formularios para añadir nuevos elementos.
+*   `lib/services/`: Contiene la lógica de negocio que interactúa con servicios externos, como Firestore.
+*   `lib/models/`: Aunque no he explorado estos archivos, su nombre sugiere que definen las estructuras de datos (Modelos) para vehículos, gastos, etc.
+
+---
+
+### 3. Enrutamiento y Navegación (con `go_router`)
+
+La navegación es gestionada por `GoRouter` en `lib/main.dart` y es uno de los pilares de la app.
+
+*   **Redirección de Autenticación:**
+    *   El router "escucha" los cambios en el estado de autenticación de Firebase (`FirebaseAuth.instance.authStateChanges()`).
+    *   Si el usuario **no está autenticado**, es redirigido automáticamente a la pantalla de `/login`.
+    *   Si el usuario **ya está autenticado** y trata de ir a `/login`, es redirigido a la pantalla principal (`/expenses`).
+*   **Rutas Definidas:**
+    *   Se usa un `ShellRoute` para crear una interfaz común (`HomePage`) con una barra de navegación inferior para las pantallas principales.
+    *   **Pantallas Principales (dentro del Shell):**
+        *   `/expenses`: `ExpensesScreen` (pantalla de inicio por defecto).
+        *   `/vehicles`: `VehiclesScreen`.
+        *   `/settings`: `SettingsScreen`.
+    *   **Pantallas de Nivel Superior (fuera del Shell):**
+        *   `/login`: `LoginPage` para iniciar sesión o registrarse.
+        *   `/add_expense`: Abre un diálogo (`AddExpenseForm`) para añadir un nuevo gasto.
+        *   `/add_vehicle`: Abre un diálogo (`AddVehicleForm`) para añadir un nuevo vehículo.
+        *   `/edit_vehicle/:vehicleId`: `EditVehicleScreen` para editar un vehículo existente, pasando el ID como parámetro en la URL.
+
+---
+
+### 4. Gestión de Estado (con `provider`)
+
+Se utilizan dos `ChangeNotifierProvider` en `lib/main.dart`:
+
+1.  `ThemeProvider`: Gestiona el `ThemeMode` (claro, oscuro o sistema). El `SettingsScreen` puede llamar a su método `toggleTheme` para cambiar el tema de toda la aplicación.
+2.  `LocaleProvider`: Gestiona el `Locale` (idioma). El `SettingsScreen` usa esto para permitir al usuario cambiar entre 'Español' e 'Inglés'.
+
+Estos `Providers` se inyectan en la parte superior del árbol de widgets con `MultiProvider`, haciéndolos accesibles desde cualquier parte de la app.
+
+---
+
+### 5. Conexión a Base de Datos (Cloud Firestore)
+
+La interacción con Firestore se abstrae en la clase `FirestoreService` (`lib/services/firestore_service.dart`).
+
+*   **Creación de Usuario:**
+    *   El método `createUserDocument` se llama después de que un nuevo usuario se registra.
+    *   Crea un nuevo documento en la colección `users` con el `uid` del usuario como ID del documento. Este documento inicial contiene el email del usuario y la fecha de creación.
+*   **Operaciones CRUD (implícitas):**
+    *   Los nombres de los archivos como `add_expense_form.dart`, `vehicles_screen.dart`, etc., sugieren que `FirestoreService` probablemente contiene (o debería contener) métodos para:
+        *   Añadir, leer, actualizar y borrar gastos (`expenses`).
+        *   Añadir, leer, actualizar y borrar vehículos (`vehicles`).
+    *   Los datos de cada usuario probablemente se almacenan en subcolecciones dentro del documento del usuario (ej: `/users/{userId}/vehicles/{vehicleId}`).
+
+---
+
+### 6. Lógica de las Pantallas Principales
+
+*   **`LoginPage` (`/login`):**
+    *   Contiene dos campos de texto (`email`, `password`) y dos botones (`Iniciar Sesión`, `Registrarse`).
+    *   Llama a los métodos `signInWithEmailAndPassword` o `createUserWithEmailAndPassword` de `FirebaseAuth`.
+    *   No necesita navegar manualmente tras el éxito, ya que el `redirect` de `GoRouter` se encarga de ello.
+*   **`HomePage` (El Shell):**
+    *   Es un `StatefulWidget` que envuelve a las pantallas principales.
+    *   Contiene el `Scaffold` con un `AppBar` cuyo título cambia dinámicamente.
+    *   Incluye la `BottomNavigationBar` para navegar entre `Gastos`, `Vehículos` y `Configuración`.
+    *   Muestra un `FloatingActionButton` (+) en las pantallas de `Gastos` y `Vehículos` para añadir nuevos elementos, navegando a `/add_expense` o `/add_vehicle`.
+*   **`SettingsScreen` (`/settings`):**
+    *   Permite cambiar el tema (claro/oscuro) usando un `SwitchListTile` que interactúa con `ThemeProvider`.
+    *   Permite cambiar el idioma (español/inglés) usando `RadioListTile` (la parte que causaba problemas) que interactúa con `LocaleProvider`.
