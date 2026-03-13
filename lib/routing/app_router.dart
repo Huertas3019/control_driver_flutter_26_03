@@ -1,20 +1,24 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/signup_screen.dart';
-import '../services/auth_service.dart';
+import '../services/auth_service.dart'; // Corrected import
+import '../models/vehicle_model.dart'; // Import Vehicle model
 
 import '../screens/expenses/expenses_screen.dart';
-import '../screens/vehicles/vehicles_screen.dart';
+import '../screens/vehicle/vehicle_list_screen.dart';
+import '../screens/vehicle/add_edit_vehicle_screen.dart'; // Import the new screen
 import '../screens/settings/settings_screen.dart';
 import '../widgets/scaffold_with_nav_bar.dart';
 
 class AppRouter {
   static GoRouter getRouter(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
+    final authService = Provider.of<AuthService>(
+      context,
+      listen: false,
+    ); // Corrected to AuthService
     final rootNavigatorKey = GlobalKey<NavigatorState>();
 
     return GoRouter(
@@ -54,7 +58,23 @@ class AppRouter {
               routes: [
                 GoRoute(
                   path: '/vehicles',
-                  builder: (context, state) => const VehiclesScreen(),
+                  builder: (context, state) => const VehicleListScreen(),
+                  routes: [
+                    // Sub-route for adding a new vehicle
+                    GoRoute(
+                      path: 'add',
+                      builder: (context, state) => const AddEditVehicleScreen(),
+                    ),
+                    // Sub-route for editing an existing vehicle
+                    GoRoute(
+                      path: 'edit/:id',
+                      builder: (context, state) {
+                        // The vehicle object is passed as an 'extra' parameter
+                        final vehicle = state.extra as Vehicle?;
+                        return AddEditVehicleScreen(vehicle: vehicle);
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),

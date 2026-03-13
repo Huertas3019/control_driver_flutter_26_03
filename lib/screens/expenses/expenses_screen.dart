@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class ExpensesScreen extends StatelessWidget {
@@ -7,12 +6,8 @@ class ExpensesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mis Gastos'),
-      ),
-      body: const Center(
-        child: Text('Aquí se mostrará la lista de gastos.'),
-      ),
+      appBar: AppBar(title: const Text('Mis Gastos')),
+      body: const Center(child: Text('Aquí se mostrará la lista de gastos.')),
     );
   }
 }

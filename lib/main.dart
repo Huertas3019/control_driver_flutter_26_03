@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -8,17 +7,17 @@ import 'firebase_options.dart';
 import 'routing/app_router.dart';
 import 'providers/theme_provider.dart';
 import 'services/auth_service.dart';
+import 'providers/vehicle_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => AuthService()),
+        ChangeNotifierProvider(create: (context) => VehicleProvider()),
       ],
       child: const MyApp(),
     ),
@@ -31,7 +30,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final router = AppRouter.getRouter(context); // Get the router dynamically
+    final router = AppRouter.getRouter(context);
 
     const Color primarySeedColor = Color(0xFF1B2A41);
     final TextTheme appTextTheme = TextTheme(
@@ -51,7 +50,11 @@ class MyApp extends StatelessWidget {
         backgroundColor: const Color(0xFFF4F7F5),
         foregroundColor: const Color(0xFF333333),
         elevation: 0.5,
-        titleTextStyle: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.w600, color: const Color(0xFF333333)),
+        titleTextStyle: GoogleFonts.montserrat(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF333333),
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -69,14 +72,18 @@ class MyApp extends StatelessWidget {
       colorScheme: ColorScheme.fromSeed(
         seedColor: primarySeedColor,
         brightness: Brightness.dark,
-        background: const Color(0xFF121212)
+        surface: const Color(0xFF121212), // Corrected from background to surface
       ),
       textTheme: appTextTheme.apply(bodyColor: Colors.white, displayColor: Colors.white),
       appBarTheme: AppBarTheme(
         backgroundColor: const Color(0xFF1E1E1E),
         foregroundColor: Colors.white,
         elevation: 0.5,
-        titleTextStyle: GoogleFonts.montserrat(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+        titleTextStyle: GoogleFonts.montserrat(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -94,10 +101,8 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeProvider.themeMode,
-      routerConfig: router, // Use the dynamic router
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
     );
   }
 }
-
-// Reload trigger

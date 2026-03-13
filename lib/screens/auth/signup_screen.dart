@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
-      } 
+      }
     }
   }
 
@@ -62,8 +61,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'Crea tu Cuenta',
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
@@ -75,9 +74,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 40),
                   TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Correo Electrónico'),
+                    decoration: const InputDecoration(
+                      labelText: 'Correo Electrónico',
+                    ),
                     keyboardType: TextInputType.emailAddress,
-                    validator: (value) => value!.isEmpty ? 'Ingresa tu correo' : null,
+                    validator: (value) =>
+                        value!.isEmpty ? 'Ingresa tu correo' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -85,12 +87,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: InputDecoration(
                       labelText: 'Contraseña',
                       suffixIcon: IconButton(
-                        icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
-                        onPressed: () => setState(() => _obscureText = !_obscureText),
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: () =>
+                            setState(() => _obscureText = !_obscureText),
                       ),
                     ),
                     obscureText: _obscureText,
-                    validator: (value) => value!.length < 6 ? 'La contraseña debe tener al menos 6 caracteres' : null,
+                    validator: (value) => value!.length < 6
+                        ? 'La contraseña debe tener al menos 6 caracteres'
+                        : null,
                   ),
                   const SizedBox(height: 24),
                   authService.isLoading

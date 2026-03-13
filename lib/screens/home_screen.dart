@@ -15,14 +15,15 @@ class HomeScreen extends StatelessWidget {
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              context.go('/');
+              // Add mounted check before using context
+              if (context.mounted) {
+                context.go('/');
+              }
             },
           ),
         ],
       ),
-      body: const Center(
-        child: Text('¡Bienvenido!'),
-      ),
+      body: const Center(child: Text('¡Bienvenido!')),
     );
   }
 }

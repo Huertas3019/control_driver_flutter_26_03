@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ScaffoldWithNavBar extends StatelessWidget {
-  const ScaffoldWithNavBar({required this.navigationShell, Key? key}) : super(key: key ?? const ValueKey<String>('ScaffoldWithNavBar'));
+  const ScaffoldWithNavBar({required this.navigationShell, Key? key})
+    : super(key: key ?? const ValueKey<String>('ScaffoldWithNavBar'));
 
   final StatefulNavigationShell navigationShell;
 
@@ -21,10 +21,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
             icon: Icon(Icons.directions_car),
             label: 'Vehículos',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Ajustes',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Ajustes'),
         ],
         currentIndex: navigationShell.currentIndex,
         onTap: (int index) => _onTap(context, index),

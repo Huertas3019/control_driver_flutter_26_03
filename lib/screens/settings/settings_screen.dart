@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/theme_provider.dart';
@@ -12,9 +11,7 @@ class SettingsScreen extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Configuración'),
-      ),
+      appBar: AppBar(title: const Text('Configuración')),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -25,7 +22,9 @@ class SettingsScreen extends StatelessWidget {
               themeProvider.toggleTheme();
             },
             secondary: Icon(
-              themeProvider.themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
+              themeProvider.themeMode == ThemeMode.dark
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
             ),
           ),
           const Divider(),
@@ -39,11 +38,16 @@ class SettingsScreen extends StatelessWidget {
               color: Theme.of(context).colorScheme.error,
             ),
             onTap: () async {
+              // Mounted check is not strictly needed here because showDialog is the `await`
+              // and the context is used before it. However, it's good practice.
+              if (!context.mounted) return;
               final confirmed = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text('Confirmar'),
-                  content: const Text('¿Estás seguro de que quieres cerrar sesión?'),
+                  content: const Text(
+                    '¿Estás seguro de que quieres cerrar sesión?',
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
@@ -59,7 +63,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
               );
 
-              if (confirmed == true) {
+              if (confirmed == true && context.mounted) {
                 await context.read<AuthService>().signOut();
               }
             },

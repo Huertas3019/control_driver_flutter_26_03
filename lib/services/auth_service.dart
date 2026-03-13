@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -19,10 +18,16 @@ class AuthService with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> signUp({required String email, required String password}) async {
+  Future<String?> signUp({
+    required String email,
+    required String password,
+  }) async {
     _setLoading(true);
     try {
-      await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       return null; // Success
     } on FirebaseAuthException catch (e) {
       return e.message; // Return error message
@@ -31,7 +36,10 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future<String?> signIn({required String email, required String password}) async {
+  Future<String?> signIn({
+    required String email,
+    required String password,
+  }) async {
     _setLoading(true);
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
