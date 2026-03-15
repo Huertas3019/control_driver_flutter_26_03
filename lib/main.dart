@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,9 @@ import 'routing/app_router.dart';
 import 'providers/theme_provider.dart';
 import 'services/auth_service.dart';
 import 'providers/vehicle_provider.dart';
+import 'providers/expense_provider.dart';
+import 'providers/income_provider.dart';
+import 'providers/platform_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +21,22 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => AuthService()),
-        ChangeNotifierProvider(create: (context) => VehicleProvider()),
+        ChangeNotifierProxyProvider<AuthService, VehicleProvider>(
+          create: (_) => VehicleProvider(null),
+          update: (_, auth, previous) => VehicleProvider(auth.user?.uid),
+        ),
+        ChangeNotifierProxyProvider<AuthService, ExpenseProvider>(
+          create: (_) => ExpenseProvider(null),
+          update: (_, auth, previous) => ExpenseProvider(auth.user?.uid),
+        ),
+        ChangeNotifierProxyProvider<AuthService, IncomeProvider>(
+          create: (_) => IncomeProvider(null),
+          update: (_, auth, previous) => IncomeProvider(auth.user?.uid),
+        ),
+         ChangeNotifierProxyProvider<AuthService, PlatformProvider>(
+          create: (_) => PlatformProvider(null),
+          update: (_, auth, previous) => PlatformProvider(auth.user?.uid),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -97,7 +116,7 @@ class MyApp extends StatelessWidget {
     );
 
     return MaterialApp.router(
-      title: 'Portal de Clientes',
+      title: 'Mi Gestor de Flota',
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeProvider.themeMode,

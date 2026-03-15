@@ -1,73 +1,93 @@
+
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Added this line
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
-import '../models/vehicle_model.dart';
-import '../services/vehicle_service.dart';
+import 'package:myapp/models/vehicle_model.dart';
+import 'package:myapp/services/firestore_service.dart';
 
 class VehicleProvider with ChangeNotifier {
-  final VehicleService _vehicleService = VehicleService();
-  final _uuid = const Uuid();
+  final FirestoreService _firestoreService = FirestoreService();
+  StreamSubscription? _vehicleSubscription;
+
+  final String? _userId;
+  String? get userId => _userId;
 
   List<Vehicle> _vehicles = [];
-  StreamSubscription? _vehicleSubscription;
+  Vehicle? _selectedVehicle;
   bool _isLoading = false;
 
   List<Vehicle> get vehicles => _vehicles;
+  Vehicle? get selectedVehicle => _selectedVehicle;
   bool get isLoading => _isLoading;
 
+  VehicleProvider(this._userId) {
+    if (_userId != null && _userId.isNotEmpty) {
+      fetchVehicles();
+    }
+  }
+
   void _setLoading(bool loading) {
-    _isLoading = loading;
+    if (_isLoading != loading) {
+      _isLoading = loading;
+      notifyListeners();
+    }
+  }
+
+  void fetchVehicles() {
+    if (_userId == null) return;
+    _setLoading(true);
+    _vehicleSubscription?.cancel();
+    _vehicleSubscription = _firestoreService
+        .collectionStream(
+      path: 'vehicles',
+      builder: (data, documentId) {
+        final doc = {
+          'id': documentId,
+          if (data != null) ...data,
+        };
+        return Vehicle.fromJson(doc);
+      },
+      queryBuilder: (query) => query.where('userId', isEqualTo: _userId),
+    )
+        .listen((vehicles) {
+      _vehicles = vehicles;
+      if (_vehicles.isNotEmpty && _selectedVehicle == null) {
+        _selectedVehicle = _vehicles.first;
+      }
+      _setLoading(false);
+      notifyListeners();
+    }, onError: (error) {
+      _setLoading(false);
+      notifyListeners();
+    });
+  }
+
+  void setSelectedVehicleId(String vehicleId) {
+    try {
+      _selectedVehicle = _vehicles.firstWhere((v) => v.id == vehicleId);
+    } catch (e) {
+      _selectedVehicle = null;
+    }
     notifyListeners();
   }
 
-  void fetchVehicles(String userId) {
-    _setLoading(true);
-    _vehicleSubscription?.cancel(); 
-    _vehicleSubscription = _vehicleService
-        .getVehicles(userId)
-        .listen(
-          (vehicles) {
-            _vehicles = vehicles;
-            _setLoading(false);
-            notifyListeners();
-          },
-          onError: (error) {
-            debugPrint("Error in vehicle stream: $error");
-            _setLoading(false);
-          },
-        );
-  }
-
-  Future<void> addVehicle({
-    required String userId,
-    required String brand,
-    required String model,
-    required int year,
-    required String licensePlate,
-    required double fuelEfficiency,
-    String? nickname,
-  }) async {
-    final newVehicle = Vehicle(
-      id: _uuid.v4(),
-      userId: userId,
-      brand: brand,
-      model: model,
-      year: year,
-      licensePlate: licensePlate,
-      nickname: nickname,
-      fuelEfficiency: fuelEfficiency,
-      createdAt: Timestamp.now(),
-    );
-    await _vehicleService.addVehicle(newVehicle);
+  Future<void> addVehicle(Vehicle vehicle) async {
+    await _firestoreService.addDocument('vehicles', vehicle.toJson());
   }
 
   Future<void> updateVehicle(Vehicle vehicle) async {
-    await _vehicleService.updateVehicle(vehicle);
+    await _firestoreService.updateDocument('vehicles', vehicle.id!, vehicle.toJson());
   }
 
   Future<void> deleteVehicle(String vehicleId) async {
-    await _vehicleService.deleteVehicle(vehicleId);
+    await _firestoreService.deleteDocument('vehicles', vehicleId);
+  }
+
+  void clear() {
+    _vehicleSubscription?.cancel();
+    _vehicles = [];
+    _selectedVehicle = null;
+    _isLoading = false;
+    notifyListeners();
   }
 
   @override

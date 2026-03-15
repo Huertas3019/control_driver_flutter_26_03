@@ -1,115 +1,117 @@
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
+import 'package:myapp/screens/expenses/expenses_screen.dart';
+import 'package:myapp/screens/platforms/platform_management_screen.dart';
+import '../services/auth_service.dart';
+import '../providers/vehicle_provider.dart';
 import '../screens/auth/login_screen.dart';
-import '../screens/auth/signup_screen.dart';
-import '../services/auth_service.dart'; // Corrected import
-import '../models/vehicle_model.dart'; // Import Vehicle model
-
-import '../screens/expenses/expenses_screen.dart';
-import '../screens/vehicle/vehicle_list_screen.dart';
-import '../screens/vehicle/add_edit_vehicle_screen.dart'; // Import the new screen
+import '../screens/auth/register_screen.dart';
+import '../screens/home/home_screen.dart';
+import '../screens/vehicles/vehicle_management_screen.dart';
+import '../screens/reports/reports_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../widgets/scaffold_with_nav_bar.dart';
 
 class AppRouter {
+  static final _rootNavigatorKey = GlobalKey<NavigatorState>();
+  static final _shellNavigatorKey = GlobalKey<NavigatorState>();
+
   static GoRouter getRouter(BuildContext context) {
-    final authService = Provider.of<AuthService>(
-      context,
-      listen: false,
-    ); // Corrected to AuthService
-    final rootNavigatorKey = GlobalKey<NavigatorState>();
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final vehicleProvider = Provider.of<VehicleProvider>(context, listen: false);
 
     return GoRouter(
-      initialLocation: '/', // Start at the root
-      navigatorKey: rootNavigatorKey,
-      refreshListenable: authService, // Re-route when auth state changes
+      navigatorKey: _rootNavigatorKey,
+      initialLocation: '/' ,
+      refreshListenable: authService,
+      redirect: (BuildContext context, GoRouterState state) async {
+        final bool loggedIn = authService.user != null;
+        final bool isLoggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/register';
 
-      routes: <RouteBase>[
-        // Auth routes
+        if (!loggedIn) {
+          return isLoggingIn ? null : '/login';
+        }
+
+        // If the user is logged in, check if they have a vehicle
+        if (loggedIn && (vehicleProvider.vehicles.isEmpty)) {
+            vehicleProvider.fetchVehicles(); // ensure the list is up to date
+        }
+
+        final hasVehicle = vehicleProvider.vehicles.isNotEmpty;
+
+        // If logged in and trying to go to login/register, redirect to home
+        if (isLoggingIn) {
+          return '/';
+        }
+
+        // If logged in but has no vehicle, force to add_vehicle screen
+        if (!hasVehicle && state.matchedLocation != '/add-vehicle') {
+            return '/add-vehicle';
+        }
+
+        // If logged in, has a vehicle, but is on the add_vehicle screen, go home
+        if(hasVehicle && state.matchedLocation == '/add-vehicle'){
+          return '/';
+        }
+
+        return null; // No redirect needed
+      },
+      routes: [
         GoRoute(
           path: '/login',
           builder: (context, state) => const LoginScreen(),
         ),
         GoRoute(
-          path: '/signup',
-          builder: (context, state) => const SignUpScreen(),
+          path: '/register',
+          builder: (context, state) => const RegisterScreen(),
         ),
-
-        // Main application shell
-        StatefulShellRoute.indexedStack(
-          builder: (context, state, navigationShell) {
-            return ScaffoldWithNavBar(navigationShell: navigationShell);
+        GoRoute(
+          path: '/add-vehicle',
+          builder: (context, state) => const VehicleManagementScreen(),
+        ), 
+        GoRoute(
+          path: '/vehicles',
+          builder: (context, state) => const VehicleManagementScreen(),
+        ),  
+        GoRoute(
+          path: '/platforms',
+          builder: (context, state) => const PlatformManagementScreen(),
+        ),                        
+        ShellRoute(
+          navigatorKey: _shellNavigatorKey,
+          builder: (context, state, child) {
+            return ScaffoldWithNavBar(child: child);
           },
-          branches: [
-            // Branch for the Expenses tab
-            StatefulShellBranch(
-              routes: [
-                GoRoute(
-                  path: '/', // Root of the shell
-                  builder: (context, state) => const ExpensesScreen(),
-                ),
-              ],
+          routes: [
+            GoRoute(
+              path: '/' ,
+              pageBuilder: (context, state) => const NoTransitionPage(
+                child: HomeScreen(),
+              ),
             ),
-
-            // Branch for the Vehicles tab
-            StatefulShellBranch(
-              routes: [
-                GoRoute(
-                  path: '/vehicles',
-                  builder: (context, state) => const VehicleListScreen(),
-                  routes: [
-                    // Sub-route for adding a new vehicle
-                    GoRoute(
-                      path: 'add',
-                      builder: (context, state) => const AddEditVehicleScreen(),
-                    ),
-                    // Sub-route for editing an existing vehicle
-                    GoRoute(
-                      path: 'edit/:id',
-                      builder: (context, state) {
-                        // The vehicle object is passed as an 'extra' parameter
-                        final vehicle = state.extra as Vehicle?;
-                        return AddEditVehicleScreen(vehicle: vehicle);
-                      },
-                    ),
-                  ],
-                ),
-              ],
+            GoRoute(
+              path: '/expenses',
+              pageBuilder: (context, state) => const NoTransitionPage(
+                child: ExpensesScreen(),
+              ),
+            ),            
+            GoRoute(
+              path: '/reports',
+              pageBuilder: (context, state) => const NoTransitionPage(
+                child: ReportsScreen(),
+              ),
             ),
-
-            // Branch for the Settings tab
-            StatefulShellBranch(
-              routes: [
-                GoRoute(
-                  path: '/settings',
-                  builder: (context, state) => const SettingsScreen(),
-                ),
-              ],
+            GoRoute(
+              path: '/settings',
+              pageBuilder: (context, state) => const NoTransitionPage(
+                child: SettingsScreen(),
+              ),
             ),
           ],
         ),
       ],
-
-      redirect: (BuildContext context, GoRouterState state) {
-        final bool loggedIn = authService.user != null;
-        final String location = state.uri.toString();
-        final bool onAuthRoute = location == '/login' || location == '/signup';
-
-        // If not logged in and not on an auth route, redirect to login
-        if (!loggedIn && !onAuthRoute) {
-          return '/login';
-        }
-
-        // If logged in and on an auth route, redirect to the main screen
-        if (loggedIn && onAuthRoute) {
-          return '/';
-        }
-
-        // No redirect needed
-        return null;
-      },
     );
   }
 }

@@ -1,38 +1,72 @@
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ScaffoldWithNavBar extends StatelessWidget {
-  const ScaffoldWithNavBar({required this.navigationShell, Key? key})
-    : super(key: key ?? const ValueKey<String>('ScaffoldWithNavBar'));
+  final Widget child;
 
-  final StatefulNavigationShell navigationShell;
+  const ScaffoldWithNavBar({required this.child, super.key});
+
+  int _calculateSelectedIndex(BuildContext context) {
+    final String location = GoRouterState.of(context).matchedLocation;
+    if (location.startsWith('/expenses')) {
+      return 1;
+    } else if (location.startsWith('/reports')) {
+      return 2;
+    } else if (location.startsWith('/settings')) {
+      return 3;
+    }
+    return 0; // Home is the default
+  }
+
+  void _onItemTapped(int index, BuildContext context) {
+    switch (index) {
+      case 0:
+        context.go('/');
+        break;
+      case 1:
+        context.go('/expenses');
+        break;
+      case 2:
+        context.go('/reports');
+        break;
+      case 3:
+        context.go('/settings');
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: navigationShell,
+      body: child,
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed, // Good for 4+ items
+        currentIndex: _calculateSelectedIndex(context),
+        onTap: (index) => _onItemTapped(index, context),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long),
-            label: 'Gastos',
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car),
-            label: 'Vehículos',
+            icon: Icon(Icons.receipt_long_outlined),
+            activeIcon: Icon(Icons.receipt_long),
+            label: 'Movimientos',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Ajustes'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart_outlined),
+            activeIcon: Icon(Icons.bar_chart),
+            label: 'Informes',
+          ),
+           BottomNavigationBarItem(
+            icon: Icon(Icons.settings_outlined),
+            activeIcon: Icon(Icons.settings),
+            label: 'Ajustes',
+          ),
         ],
-        currentIndex: navigationShell.currentIndex,
-        onTap: (int index) => _onTap(context, index),
       ),
-    );
-  }
-
-  void _onTap(BuildContext context, int index) {
-    navigationShell.goBranch(
-      index,
-      initialLocation: index == navigationShell.currentIndex,
     );
   }
 }

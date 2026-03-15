@@ -4,31 +4,33 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../services/auth_service.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 
     final authService = Provider.of<AuthService>(context, listen: false);
     try {
-      final error = await authService.signIn(
+      final error = await authService.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
@@ -51,6 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(elevation: 0, backgroundColor: Colors.transparent),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -61,13 +64,13 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Bienvenido de Nuevo',
+                  'Crea tu Cuenta',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 32),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Inicia sesión para continuar',
+                  'Completa los datos para empezar',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
@@ -87,14 +90,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   validator: (value) =>
                       value == null || value.length < 6 ? 'La contraseña es muy corta' : null,
                 ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  decoration: const InputDecoration(labelText: 'Confirmar Contraseña', border: OutlineInputBorder()),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value != _passwordController.text) {
+                      return 'Las contraseñas no coinciden';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 24),
-                 ElevatedButton(
-                  onPressed: _login,
-                  child: const Text('Iniciar Sesión'),
+                ElevatedButton(
+                  onPressed: _register,
+                  child: const Text('Registrarse'),
                 ),
                 TextButton(
-                  onPressed: () => context.go('/register'),
-                  child: const Text('¿No tienes cuenta? Regístrate'),
+                  onPressed: () => context.go('/login'),
+                  child: const Text('¿Ya tienes cuenta? Inicia Sesión'),
                 ),
               ],
             ),
