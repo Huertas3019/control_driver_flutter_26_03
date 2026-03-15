@@ -20,6 +20,7 @@ class _AddEditVehicleScreenState extends State<AddEditVehicleScreen> {
   late TextEditingController _yearController;
   late TextEditingController _licensePlateController;
   late TextEditingController _nicknameController;
+  late TextEditingController _fuelEfficiencyController;
 
   bool get _isEditMode => widget.vehicle != null;
 
@@ -31,6 +32,7 @@ class _AddEditVehicleScreenState extends State<AddEditVehicleScreen> {
     _yearController = TextEditingController(text: widget.vehicle?.year.toString() ?? '');
     _licensePlateController = TextEditingController(text: widget.vehicle?.licensePlate ?? '');
     _nicknameController = TextEditingController(text: widget.vehicle?.nickname ?? '');
+    _fuelEfficiencyController = TextEditingController(text: widget.vehicle?.fuelEfficiency.toString() ?? '');
   }
 
   @override
@@ -40,6 +42,7 @@ class _AddEditVehicleScreenState extends State<AddEditVehicleScreen> {
     _yearController.dispose();
     _licensePlateController.dispose();
     _nicknameController.dispose();
+    _fuelEfficiencyController.dispose();
     super.dispose();
   }
 
@@ -48,7 +51,6 @@ class _AddEditVehicleScreenState extends State<AddEditVehicleScreen> {
       return;
     }
 
-    // Using a local variable for context to ensure it's not used across async gaps.
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     try {
@@ -62,6 +64,8 @@ class _AddEditVehicleScreenState extends State<AddEditVehicleScreen> {
         );
         return;
       }
+      
+      final fuelEfficiency = double.tryParse(_fuelEfficiencyController.text) ?? 0.0;
 
       if (_isEditMode) {
         final updatedVehicle = widget.vehicle!.copyWith(
@@ -70,6 +74,7 @@ class _AddEditVehicleScreenState extends State<AddEditVehicleScreen> {
           year: int.parse(_yearController.text),
           licensePlate: _licensePlateController.text,
           nickname: _nicknameController.text,
+          fuelEfficiency: fuelEfficiency,
         );
         await vehicleProvider.updateVehicle(updatedVehicle);
       } else {
@@ -80,6 +85,7 @@ class _AddEditVehicleScreenState extends State<AddEditVehicleScreen> {
           year: int.parse(_yearController.text),
           licensePlate: _licensePlateController.text,
           nickname: _nicknameController.text,
+          fuelEfficiency: fuelEfficiency,
         );
       }
       
@@ -130,6 +136,15 @@ class _AddEditVehicleScreenState extends State<AddEditVehicleScreen> {
                 keyboardType: TextInputType.number,
                 validator: (value) => value!.isEmpty || int.tryParse(value) == null
                     ? 'Por favor, introduce un año válido'
+                    : null,
+              ),
+              const SizedBox(height: 16),
+               TextFormField(
+                controller: _fuelEfficiencyController,
+                decoration: const InputDecoration(labelText: 'Rendimiento (Km/L)'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: (value) => value!.isEmpty || double.tryParse(value) == null
+                    ? 'Por favor, introduce un rendimiento válido'
                     : null,
               ),
               const SizedBox(height: 16),

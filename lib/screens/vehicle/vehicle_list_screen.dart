@@ -70,7 +70,7 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
                 title: Text(
                   vehicle.nickname ?? '${vehicle.brand} ${vehicle.model}',
                 ),
-                subtitle: Text('${vehicle.licensePlate} - ${vehicle.year}'),
+                subtitle: Text('${vehicle.licensePlate} - ${vehicle.year} - ${vehicle.fuelEfficiency} Km/L'),
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
                   // Navigate to the add/edit screen in 'edit' mode

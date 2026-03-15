@@ -21,10 +21,9 @@ class VehicleProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Subscribes to the vehicle stream for a user.
   void fetchVehicles(String userId) {
     _setLoading(true);
-    _vehicleSubscription?.cancel(); // Cancel previous subscription
+    _vehicleSubscription?.cancel(); 
     _vehicleSubscription = _vehicleService
         .getVehicles(userId)
         .listen(
@@ -40,13 +39,13 @@ class VehicleProvider with ChangeNotifier {
         );
   }
 
-  /// Adds a new vehicle.
   Future<void> addVehicle({
     required String userId,
     required String brand,
     required String model,
     required int year,
     required String licensePlate,
+    required double fuelEfficiency,
     String? nickname,
   }) async {
     final newVehicle = Vehicle(
@@ -57,18 +56,16 @@ class VehicleProvider with ChangeNotifier {
       year: year,
       licensePlate: licensePlate,
       nickname: nickname,
+      fuelEfficiency: fuelEfficiency,
       createdAt: Timestamp.now(),
     );
     await _vehicleService.addVehicle(newVehicle);
-    // No need to call notifyListeners() here, the stream will do it.
   }
 
-  /// Updates an existing vehicle.
   Future<void> updateVehicle(Vehicle vehicle) async {
     await _vehicleService.updateVehicle(vehicle);
   }
 
-  /// Deletes a vehicle by its ID.
   Future<void> deleteVehicle(String vehicleId) async {
     await _vehicleService.deleteVehicle(vehicleId);
   }

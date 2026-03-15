@@ -24,6 +24,7 @@ abstract class Vehicle with _$Vehicle {
     required String model,
     required int year,
     required String licensePlate,
+    required double fuelEfficiency,
     String? nickname,
     @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)
     required Timestamp createdAt,

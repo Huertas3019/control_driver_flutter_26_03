@@ -13,6 +13,7 @@ _Vehicle _$VehicleFromJson(Map<String, dynamic> json) => _Vehicle(
   model: json['model'] as String,
   year: (json['year'] as num).toInt(),
   licensePlate: json['licensePlate'] as String,
+  fuelEfficiency: (json['fuelEfficiency'] as num).toDouble(),
   nickname: json['nickname'] as String?,
   createdAt: _timestampFromJson(json['createdAt']),
 );
@@ -24,6 +25,7 @@ Map<String, dynamic> _$VehicleToJson(_Vehicle instance) => <String, dynamic>{
   'model': instance.model,
   'year': instance.year,
   'licensePlate': instance.licensePlate,
+  'fuelEfficiency': instance.fuelEfficiency,
   'nickname': instance.nickname,
   'createdAt': _timestampToJson(instance.createdAt),
 };
