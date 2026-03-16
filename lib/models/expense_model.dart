@@ -14,7 +14,7 @@ enum ExpenseType {
 }
 
 @freezed
-class Expense with _$Expense {
+abstract class Expense with _$Expense {
   const factory Expense({
     String? id,
     required String vehicleId,
@@ -30,8 +30,10 @@ class Expense with _$Expense {
   }) = _Expense;
 
   factory Expense.fromJson(Map<String, dynamic> json) => _$ExpenseFromJson(json);
+}
 
-  factory Expense.fromFirestore(DocumentSnapshot doc) {
+extension ExpenseFirestore on Expense {
+  static Expense fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     data['id'] = doc.id;
     return Expense.fromJson(data);

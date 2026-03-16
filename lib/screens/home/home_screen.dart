@@ -74,7 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (provider.vehicles.isEmpty) return const Center(child: Text('No hay vehículos.'));
 
     return DropdownButtonFormField<Vehicle>(
-      initialValue: selectedVehicle, // Changed from value to initialValue
+      key: ValueKey(selectedVehicle),
+      initialValue: selectedVehicle,
       onChanged: (Vehicle? newValue) {
         setState(() {
           selectedVehicle = newValue;
@@ -97,7 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (provider.isLoading) return const Center(child: CircularProgressIndicator());
 
     return DropdownButtonFormField<Platform>(
-      initialValue: selectedPlatform, // Changed from value to initialValue
+      key: ValueKey(selectedPlatform),
+      initialValue: selectedPlatform,
       onChanged: (Platform? newValue) {
         setState(() {
           selectedPlatform = newValue;

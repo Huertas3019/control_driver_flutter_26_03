@@ -6,7 +6,7 @@ part 'income_model.freezed.dart';
 part 'income_model.g.dart';
 
 @freezed
-class Income with _$Income {
+abstract class Income with _$Income {
   const factory Income({
     String? id,
     required String vehicleId,
@@ -23,8 +23,10 @@ class Income with _$Income {
   }) = _Income;
 
   factory Income.fromJson(Map<String, dynamic> json) => _$IncomeFromJson(json);
+}
 
-  factory Income.fromFirestore(DocumentSnapshot doc) {
+extension IncomeFirestore on Income {
+  static Income fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     data['id'] = doc.id;
     return Income.fromJson(data);

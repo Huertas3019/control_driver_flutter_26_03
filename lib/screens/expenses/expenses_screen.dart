@@ -63,7 +63,7 @@ class ExpensesScreen extends StatelessWidget {
     final descriptionController = TextEditingController(text: expense?.description);
     final odometerController = TextEditingController(text: expense?.odometer.toString());
     String? selectedCategory = expense?.category;
-    String? selectedType = expense?.type;
+    ExpenseType? selectedType = expense?.type;
     final List<String> categories = ['Combustible', 'Mantenimiento', 'Seguro', 'Limpieza', 'Peajes', 'Otros'];
 
     // Usamos el vehicleId del provider
@@ -98,10 +98,10 @@ class ExpensesScreen extends StatelessWidget {
                   onChanged: (value) => selectedCategory = value,
                   validator: (value) => value == null ? 'Selecciona una categoría' : null,
                 ),
-                 DropdownButtonFormField<String>(
+                 DropdownButtonFormField<ExpenseType>(
                   initialValue: selectedType,
                   hint: const Text('Tipo'),
-                  items: categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(), // Re-using categories for type as a placeholder
+                  items: ExpenseType.values.map((t) => DropdownMenuItem(value: t, child: Text(t.name.toUpperCase()))).toList(),
                   onChanged: (value) => selectedType = value,
                   validator: (value) => value == null ? 'Selecciona un tipo' : null,
                 ),
@@ -128,7 +128,7 @@ class ExpensesScreen extends StatelessWidget {
                   userId: provider.userId ?? '', // Handle null userId
                   vehicleId: vehicleId,
                   amount: double.parse(amountController.text),
-                  odometer: double.parse(odometerController.text),
+                  odometer: int.parse(odometerController.text),
                   category: selectedCategory!,
                   type: selectedType!,
                   date: expense?.date ?? DateTime.now(),

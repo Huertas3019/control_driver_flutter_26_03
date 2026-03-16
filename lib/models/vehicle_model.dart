@@ -15,7 +15,7 @@ Timestamp _timestampFromJson(dynamic json) {
 Timestamp _timestampToJson(Timestamp timestamp) => timestamp;
 
 @freezed
-class Vehicle with _$Vehicle {
+abstract class Vehicle with _$Vehicle {
   const factory Vehicle({
     String? id,
     required String userId,
@@ -30,8 +30,10 @@ class Vehicle with _$Vehicle {
   }) = _Vehicle;
 
   factory Vehicle.fromJson(Map<String, dynamic> json) => _$VehicleFromJson(json);
+}
 
-  factory Vehicle.fromFirestore(DocumentSnapshot doc) {
+extension VehicleFirestore on Vehicle {
+  static Vehicle fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     data['id'] = doc.id;
     return Vehicle.fromJson(data);

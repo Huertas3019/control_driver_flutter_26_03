@@ -24,7 +24,7 @@ class ReportsScreen extends StatelessWidget {
 
   Widget _buildReports(BuildContext context, ExpenseProvider expenseProvider, IncomeProvider incomeProvider) {
     final totalExpenses = expenseProvider.expenses.fold<double>(0, (sum, item) => sum + item.amount);
-    final totalIncome = incomeProvider.incomes.fold<double>(0, (sum, item) => sum + item.revenue);
+    final totalIncome = incomeProvider.incomes.fold<double>(0, (sum, item) => sum + item.totalEarning);
     final netProfit = totalIncome - totalExpenses;
 
     final expenseByCategory = <String, double>{};
@@ -83,9 +83,8 @@ class ReportsScreen extends StatelessWidget {
     final total = data.values.fold(0.0, (a, b) => a + b);
 
     final List<PieChartSectionData> sections = data.entries.map((entry) {
-      final isTouched = false; // Add touch interaction later if needed
-      final fontSize = isTouched ? 25.0 : 16.0;
-      final radius = isTouched ? 60.0 : 50.0;
+      final fontSize = 16.0;
+      final radius = 50.0;
       return PieChartSectionData(
         color: _getColorForCategory(entry.key),
         value: entry.value,

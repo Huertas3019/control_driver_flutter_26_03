@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myapp/models/vehicle_model.dart';
 import 'package:myapp/providers/vehicle_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -133,7 +134,7 @@ class VehicleManagementScreen extends StatelessWidget {
                   plate: plateController.text,
                   initialOdometer: int.parse(odometerController.text),
                   fuelEfficiency: double.parse(fuelEfficiencyController.text),
-                  createdAt: vehicle?.createdAt ?? DateTime.now(),
+                  createdAt: vehicle?.createdAt ?? Timestamp.now(),
                 );
 
                 if (vehicle == null) {

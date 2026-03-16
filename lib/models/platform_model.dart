@@ -6,7 +6,7 @@ part 'platform_model.freezed.dart';
 part 'platform_model.g.dart';
 
 @freezed
-class Platform with _$Platform {
+abstract class Platform with _$Platform {
   const factory Platform({
     String? id,
     required String userId,
@@ -14,8 +14,10 @@ class Platform with _$Platform {
   }) = _Platform;
 
   factory Platform.fromJson(Map<String, dynamic> json) => _$PlatformFromJson(json);
+}
 
-  factory Platform.fromFirestore(DocumentSnapshot doc) {
+extension PlatformFirestore on Platform {
+  static Platform fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     data['id'] = doc.id;
     return Platform.fromJson(data);

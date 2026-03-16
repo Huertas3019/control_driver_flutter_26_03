@@ -9,12 +9,14 @@ class ScaffoldWithNavBar extends StatelessWidget {
 
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).matchedLocation;
-    if (location.startsWith('/expenses')) {
+    if (location.startsWith('/incomes')) {
       return 1;
-    } else if (location.startsWith('/reports')) {
+    } else if (location.startsWith('/expenses')) {
       return 2;
-    } else if (location.startsWith('/settings')) {
+    } else if (location.startsWith('/reports')) {
       return 3;
+    } else if (location.startsWith('/settings')) {
+      return 4;
     }
     return 0; // Home is the default
   }
@@ -25,12 +27,15 @@ class ScaffoldWithNavBar extends StatelessWidget {
         context.go('/');
         break;
       case 1:
-        context.go('/expenses');
+        context.go('/incomes');
         break;
       case 2:
-        context.go('/reports');
+        context.go('/expenses');
         break;
       case 3:
+        context.go('/reports');
+        break;
+      case 4:
         context.go('/settings');
         break;
     }
@@ -51,9 +56,14 @@ class ScaffoldWithNavBar extends StatelessWidget {
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.attach_money_outlined),
+            activeIcon: Icon(Icons.attach_money),
+            label: 'Ingresos',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.receipt_long_outlined),
             activeIcon: Icon(Icons.receipt_long),
-            label: 'Movimientos',
+            label: 'Gastos',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart_outlined),
