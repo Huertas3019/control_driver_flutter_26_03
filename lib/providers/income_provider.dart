@@ -54,6 +54,11 @@ class IncomeProvider with ChangeNotifier {
   }
 
   Future<void> addIncome(Income income) async {
+    // Check if there is already an active session to prevent duplicates
+    final hasActive = _incomes.any((i) => !i.isCompleted);
+    if (hasActive && !income.isCompleted) {
+       throw Exception('Ya tienes una jornada en curso.');
+    }
     await _firestoreService.addDocument('incomes', income.toJson());
   }
 

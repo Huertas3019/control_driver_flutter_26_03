@@ -4,6 +4,7 @@ import 'package:myapp/models/income_model.dart';
 import 'package:myapp/providers/income_provider.dart';
 import 'package:myapp/providers/vehicle_provider.dart';
 import 'package:myapp/providers/platform_provider.dart';
+import 'package:myapp/providers/expense_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
@@ -70,7 +71,19 @@ class IncomesScreen extends StatelessWidget {
                   },
                 ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showIncomeDialog(context, incomeProvider),
+        onPressed: () {
+          final hasActive = incomeProvider.incomes.any((i) => !i.isCompleted);
+          if (hasActive) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Ya tienes una jornada en curso. Finalízala antes de iniciar otra.'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+            return;
+          }
+          _showIncomeDialog(context, incomeProvider);
+        },
         child: const Icon(Icons.add),
       ),
     );
@@ -85,10 +98,12 @@ class IncomesScreen extends StatelessWidget {
     final finalOdometerCtrl = TextEditingController(text: isCompleting ? '' : income?.finalOdometer?.toString());
     final subtotalCtrl = TextEditingController(text: isCompleting ? '' : income?.subtotalEarning?.toString());
     final extraEarningCtrl = TextEditingController(text: income?.extraEarning?.toString());
-    final fuelCostCtrl = TextEditingController(text: income?.fuelCostForDay.toString());
     String? selectedPlatform = income?.platform;
 
-    final vehicleId = Provider.of<VehicleProvider>(context, listen: false).selectedVehicle?.id;
+    final vehicleProvider = Provider.of<VehicleProvider>(context, listen: false);
+    final selectedVehicle = vehicleProvider.selectedVehicle;
+    final vehicleId = selectedVehicle?.id;
+    final expenseProvider = Provider.of<ExpenseProvider>(context, listen: false);
     final platforms = Provider.of<PlatformProvider>(context, listen: false).platforms;
 
     showDialog(
@@ -140,16 +155,16 @@ class IncomesScreen extends StatelessWidget {
                         controller: subtotalCtrl,
                         decoration: const InputDecoration(labelText: 'Subtotal Recaudado'),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        validator: (value) => value == null || double.tryParse(value) == null ? 'Valor inválido' : null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Ingresa el subtotal';
+                          final cleanValue = value.replaceAll(',', '.');
+                          if (double.tryParse(cleanValue) == null) return 'Monto inválido';
+                          return null;
+                        },
                       ),
                       TextFormField(
                         controller: extraEarningCtrl,
                         decoration: const InputDecoration(labelText: 'Ingresos Extra / Propinas'),
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      ),
-                      TextFormField(
-                        controller: fuelCostCtrl,
-                        decoration: const InputDecoration(labelText: 'Gasto de Combustible Diario (Opcional)'),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       ),
                     ]
@@ -180,17 +195,41 @@ class IncomesScreen extends StatelessWidget {
                 bool completed = income?.isCompleted ?? false;
 
                 if (income == null) {
-                  // Iniciando jornada
+                  // Iniciando jornada (Paso 1)
                   completed = false;
                 } else {
-                  // Finalizando o Editando
-                  finalOdo = int.parse(finalOdometerCtrl.text);
-                  subtotal = double.parse(subtotalCtrl.text);
-                  extra = double.tryParse(extraEarningCtrl.text) ?? 0.0;
-                  fuel = double.tryParse(fuelCostCtrl.text) ?? 0.0;
-                  total = subtotal + extra;
-                  kms = finalOdo - initOdo;
-                  completed = true;
+                  // Finalizando jornada (Paso 2) o Editando
+                  // Usamos parse directo asumiendo que el validator ya los filtró
+                  // y limpiamos posibles comas por puntos
+                  final odoText = finalOdometerCtrl.text.trim();
+                  final subText = subtotalCtrl.text.trim().replaceAll(',', '.');
+                  final extraText = extraEarningCtrl.text.trim().replaceAll(',', '.');
+
+                  finalOdo = int.tryParse(odoText);
+                  subtotal = double.tryParse(subText);
+                  extra = double.tryParse(extraText) ?? 0.0;
+                  
+                  if (finalOdo != null && subtotal != null) {
+                    kms = finalOdo - initOdo;
+                    
+                    // Auto-calcular gasto teórico de combustible
+                    if (selectedVehicle != null) {
+                      final latestFuel = expenseProvider.getLatestFuelExpense(selectedVehicle.id!);
+                      if (latestFuel != null && latestFuel.pricePerLiter != null && latestFuel.pricePerLiter! > 0) {
+                        double pricePerKm = latestFuel.pricePerLiter! / selectedVehicle.fuelEfficiency;
+                        fuel = (kms > 0 ? kms : 0) * pricePerKm;
+                      }
+                    }
+                    
+                    // Ganancia total neta (Ingresos - Gastos teóricos)
+                    total = (subtotal + extra) - fuel;
+                    
+                    // IMPORTANTE: Si estamos en modo completion o ya estaba completado, forzar true
+                    completed = isCompleting || income.isCompleted;
+                  } else {
+                    // Si no es completion (solo edición de inicio), mantener estado
+                    completed = income.isCompleted;
+                  }
                 }
 
                 final newIncome = Income(
@@ -210,14 +249,31 @@ class IncomesScreen extends StatelessWidget {
                 );
 
                 if (income == null) {
-                  provider.addIncome(newIncome);
+                  provider.addIncome(newIncome).catchError((e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString()), backgroundColor: Colors.red));
+                    }
+                  });
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Jornada iniciada con éxito')));
+                  }
                 } else {
                   provider.updateIncome(newIncome);
+                  if (isCompleting && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Jornada finalizada y balance calculado'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
                 }
-                Navigator.of(context).pop();
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               }
             },
-            child: Text(income == null ? 'Iniciar' : 'Guardar'),
+            child: Text(income == null ? 'Iniciar' : (isCompleting ? 'Finalizar' : 'Guardar')),
           ),
         ],
       ),

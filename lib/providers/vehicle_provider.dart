@@ -71,7 +71,7 @@ class VehicleProvider with ChangeNotifier {
   }
 
   Future<void> addVehicle(Vehicle vehicle) async {
-    await _firestoreService.addDocument('vehicles', vehicle.toJson());
+    await _firestoreService.setDocument('vehicles', vehicle.id!, vehicle.toJson());
   }
 
   Future<void> updateVehicle(Vehicle vehicle) async {

@@ -8,6 +8,10 @@ class FirestoreService {
     return _db.collection(collectionPath).add(data);
   }
 
+  Future<void> setDocument(String collectionPath, String docId, Map<String, dynamic> data) {
+    return _db.collection(collectionPath).doc(docId).set(data);
+  }
+
   Future<void> updateDocument(String collectionPath, String docId, Map<String, dynamic> data) {
     return _db.collection(collectionPath).doc(docId).update(data);
   }

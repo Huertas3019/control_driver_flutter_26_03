@@ -7,6 +7,7 @@ import 'package:myapp/providers/vehicle_provider.dart';
 import 'package:myapp/providers/platform_provider.dart';
 import 'package:myapp/models/vehicle_model.dart';
 import 'package:myapp/models/platform_model.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final vehicleProvider = context.watch<VehicleProvider>();
     final platformProvider = context.watch<PlatformProvider>();
+    final incomeProvider = context.watch<IncomeProvider>();
 
     if (selectedVehicle == null && vehicleProvider.vehicles.isNotEmpty) {
       selectedVehicle = vehicleProvider.vehicles.first;
@@ -46,7 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              _buildActiveWorkdayCard(incomeProvider),
+              const SizedBox(height: 16),
               _buildVehicleSelector(vehicleProvider),
+              const SizedBox(height: 16),
+              _buildFuelPrompt(context, vehicleProvider, context.watch<ExpenseProvider>()),
               const SizedBox(height: 16),
               _buildPlatformSelector(platformProvider),
               const SizedBox(height: 24),
@@ -71,7 +77,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildVehicleSelector(VehicleProvider provider) {
     if (provider.isLoading) return const Center(child: CircularProgressIndicator());
-    if (provider.vehicles.isEmpty) return const Center(child: Text('No hay vehículos.'));
+    if (provider.vehicles.isEmpty) {
+      return Card(
+        color: Colors.blue.shade50,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Icon(Icons.directions_car, size: 48, color: Colors.blueGrey),
+              const SizedBox(height: 8),
+              const Text('Para comenzar, debes registrar tu primer vehículo.', textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.add),
+                label: const Text('Agregar Vehículo'),
+                onPressed: () => context.push('/vehicles'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return DropdownButtonFormField<Vehicle>(
       key: ValueKey(selectedVehicle),
@@ -79,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onChanged: (Vehicle? newValue) {
         setState(() {
           selectedVehicle = newValue;
+          provider.setSelectedVehicleId(newValue?.id ?? '');
         });
       },
       items: provider.vehicles.map<DropdownMenuItem<Vehicle>>((Vehicle vehicle) {
@@ -94,8 +121,90 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildFuelPrompt(BuildContext context, VehicleProvider vehicleProvider, ExpenseProvider expenseProvider) {
+    if (selectedVehicle == null || vehicleProvider.vehicles.isEmpty) return const SizedBox.shrink();
+
+    final latestFuel = expenseProvider.getLatestFuelExpense(selectedVehicle!.id!);
+    if (latestFuel != null) return const SizedBox.shrink();
+
+    return Card(
+      color: Colors.orange.shade50,
+      child: ListTile(
+        leading: const Icon(Icons.local_gas_station, color: Colors.orange),
+        title: const Text('Falta Gasto de Nafta'),
+        subtitle: const Text('Añade un gasto de nafta para calcular el precio por KM de este vehículo.'),
+        trailing: ElevatedButton(
+          onPressed: () => context.push('/expenses'),
+          child: const Text('Añadir'),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActiveWorkdayCard(IncomeProvider provider) {
+    if (provider.isLoading) return const SizedBox.shrink();
+    
+    final activeIncomes = provider.incomes.where((i) => !i.isCompleted);
+    if (activeIncomes.isEmpty) return const SizedBox.shrink();
+
+    final activeIncome = activeIncomes.first;
+
+    return Card(
+      color: Colors.lightGreen.shade50,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: Colors.green, width: 2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.play_circle_fill, color: Colors.green, size: 28),
+                SizedBox(width: 8),
+                Text('Jornada Activa', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text('Plataforma: ${activeIncome.platform}', style: const TextStyle(fontSize: 16)),
+            Text('Km Inicial: ${activeIncome.initialOdometer} km', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+              onPressed: () => context.push('/incomes'),
+              child: const Text('Ir a Finalizar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildPlatformSelector(PlatformProvider provider) {
     if (provider.isLoading) return const Center(child: CircularProgressIndicator());
+    if (provider.platforms.isEmpty) {
+      return Card(
+        color: Colors.blue.shade50,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Icon(Icons.work, size: 48, color: Colors.blueGrey),
+              const SizedBox(height: 8),
+              const Text('Agrega al menos una plataforma de trabajo.', textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.add),
+                label: const Text('Agregar Plataforma'),
+                onPressed: () => context.push('/platforms'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return DropdownButtonFormField<Platform>(
       key: ValueKey(selectedPlatform),
@@ -122,7 +231,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Consumer2<ExpenseProvider, IncomeProvider>(
       builder: (context, expenseProvider, incomeProvider, child) {
         final totalExpenses = expenseProvider.expenses.fold<double>(0, (sum, item) => sum + item.amount);
-        final totalIncome = incomeProvider.incomes.fold<double>(0, (sum, item) => sum + item.totalEarning);
+        // Sum subtotal and extra earnings to get actual cash income, ignoring daily theoretical fuel costs
+        final totalIncome = incomeProvider.incomes.fold<double>(
+            0, (sum, item) => sum + (item.subtotalEarning ?? 0.0) + (item.extraEarning ?? 0.0));
         final netProfit = totalIncome - totalExpenses;
 
         return Card(

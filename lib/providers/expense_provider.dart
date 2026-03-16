@@ -23,6 +23,17 @@ class ExpenseProvider with ChangeNotifier {
     }
   }
 
+  /// Obtenemos el último gasto de tipo 'nafta' para un vehículo específico
+  Expense? getLatestFuelExpense(String vehicleId) {
+    try {
+      return _expenses.firstWhere(
+        (e) => e.vehicleId == vehicleId && e.type == ExpenseType.nafta,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   void fetchExpenses() {
     if (_userId == null) return;
     _isLoading = true;

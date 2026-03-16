@@ -35,7 +35,9 @@ class ReportsScreen extends StatelessWidget {
 
   Widget _buildReports(BuildContext context, ExpenseProvider expenseProvider, IncomeProvider incomeProvider) {
     final totalExpenses = expenseProvider.expenses.fold<double>(0, (sum, item) => sum + item.amount);
-    final totalIncome = incomeProvider.incomes.fold<double>(0, (sum, item) => sum + item.totalEarning);
+    // Real cash income from workdays
+    final totalIncome = incomeProvider.incomes.fold<double>(
+        0, (sum, item) => sum + (item.subtotalEarning ?? 0.0) + (item.extraEarning ?? 0.0));
     final netProfit = totalIncome - totalExpenses;
 
     final expenseByCategory = <String, double>{};

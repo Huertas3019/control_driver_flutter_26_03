@@ -74,15 +74,20 @@ class ExpensesScreen extends StatelessWidget {
     final descriptionController = TextEditingController(text: expense?.description);
     final odometerController = TextEditingController(text: expense?.odometer.toString());
     String? selectedCategory = expense?.category;
-    ExpenseType? selectedType = expense?.type;
-    final List<String> categories = ['Combustible', 'Mantenimiento', 'Seguro', 'Limpieza', 'Peajes', 'Otros'];
+    final List<String> categories = ['Combustible', 'Mantenimiento', 'Seguro', 'Limpieza', 'Peajes', 'Impuestos', 'Otros'];
 
     // Usamos el vehicleId del provider
     final vehicleId = Provider.of<VehicleProvider>(context, listen: false).selectedVehicle?.id;
 
+    // Variables for fuel
+    final litersController = TextEditingController(text: expense?.liters?.toString() ?? '');
+    bool isCashPayment = expense?.isCash ?? true;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
         title: Text(expense == null ? 'Añadir Gasto' : 'Editar Gasto'),
         content: Form(
           key: formKey,
@@ -106,16 +111,21 @@ class ExpensesScreen extends StatelessWidget {
                   initialValue: selectedCategory,
                   hint: const Text('Categoría'),
                   items: categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
-                  onChanged: (value) => selectedCategory = value,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCategory = value;
+                    });
+                  },
                   validator: (value) => value == null ? 'Selecciona una categoría' : null,
                 ),
-                 DropdownButtonFormField<ExpenseType>(
-                  initialValue: selectedType,
-                  hint: const Text('Tipo'),
-                  items: ExpenseType.values.map((t) => DropdownMenuItem(value: t, child: Text(t.name.toUpperCase()))).toList(),
-                  onChanged: (value) => selectedType = value,
-                  validator: (value) => value == null ? 'Selecciona un tipo' : null,
-                ),
+                if (selectedCategory == 'Combustible') ...[
+                  TextFormField(
+                    controller: litersController,
+                    decoration: const InputDecoration(labelText: 'Litros de Nafta'),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) => value == null || double.tryParse(value) == null ? 'Ingresa litros' : null,
+                  ),
+                ],
                 TextFormField(
                   controller: descriptionController,
                   decoration: const InputDecoration(labelText: 'Descripción (Opcional)'),
@@ -134,16 +144,34 @@ class ExpensesScreen extends StatelessWidget {
                    return;
                 }
 
+                double amount = double.parse(amountController.text);
+                
+                // Map category to internal ExpenseType
+                ExpenseType mappedType;
+                switch (selectedCategory) {
+                  case 'Combustible': mappedType = ExpenseType.nafta; break;
+                  case 'Mantenimiento': mappedType = ExpenseType.mantenimiento; break;
+                  case 'Seguro': mappedType = ExpenseType.seguro; break;
+                  case 'Impuestos': mappedType = ExpenseType.impuestos; break;
+                  default: mappedType = ExpenseType.otros;
+                }
+
+                double liters = (mappedType == ExpenseType.nafta) ? (double.tryParse(litersController.text) ?? 0.0) : 0.0;
+                double pricePerLiter = (liters > 0) ? (amount / liters) : 0.0;
+
                 final newExpense = Expense(
                   id: expense?.id ?? const Uuid().v4(),
                   userId: provider.userId ?? '', // Handle null userId
                   vehicleId: vehicleId,
-                  amount: double.parse(amountController.text),
+                  amount: amount,
                   odometer: int.parse(odometerController.text),
                   category: selectedCategory!,
-                  type: selectedType!,
+                  type: mappedType,
                   date: expense?.date ?? DateTime.now(),
                   description: descriptionController.text,
+                  liters: liters,
+                  pricePerLiter: pricePerLiter,
+                  isCash: isCashPayment,
                 );
 
                 if (expense == null) {
@@ -157,7 +185,9 @@ class ExpensesScreen extends StatelessWidget {
             child: const Text('Guardar'),
           ),
         ],
-      ),
-    );
+      );
+     },
+    ));
   }
 }
+

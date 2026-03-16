@@ -73,7 +73,6 @@ class VehicleManagementScreen extends StatelessWidget {
     final modelController = TextEditingController(text: vehicle?.model);
     final yearController = TextEditingController(text: vehicle?.year.toString());
     final plateController = TextEditingController(text: vehicle?.plate);
-    final odometerController = TextEditingController(text: vehicle?.initialOdometer.toString());
     final fuelEfficiencyController = TextEditingController(text: vehicle?.fuelEfficiency.toString());
 
     showDialog(
@@ -107,12 +106,6 @@ class VehicleManagementScreen extends StatelessWidget {
                   decoration: const InputDecoration(labelText: 'Patente'),
                   validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
                 ),
-                TextFormField(
-                  controller: odometerController,
-                  decoration: const InputDecoration(labelText: 'Odómetro (km)'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) => (value == null || int.tryParse(value) == null) ? 'Odómetro inválido' : null,
-                ),
                  TextFormField(
                   controller: fuelEfficiencyController,
                   decoration: const InputDecoration(labelText: 'Rendimiento (km/L)'),
@@ -143,17 +136,31 @@ class VehicleManagementScreen extends StatelessWidget {
                   model: modelController.text,
                   year: int.parse(yearController.text),
                   plate: plateController.text,
-                  initialOdometer: int.parse(odometerController.text),
                   fuelEfficiency: double.parse(fuelEfficiencyController.text),
                   createdAt: vehicle?.createdAt ?? Timestamp.now(),
                 );
 
+                final Future<void> operation;
                 if (vehicle == null) {
-                  provider.addVehicle(newVehicle);
+                  operation = provider.addVehicle(newVehicle);
                 } else {
-                  provider.updateVehicle(newVehicle);
+                  operation = provider.updateVehicle(newVehicle);
                 }
-                Navigator.of(context).pop();
+
+                operation.then((_) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Vehículo guardado correctamente')),
+                    );
+                    Navigator.of(context).pop();
+                  }
+                }).catchError((error) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error al guardar: $error'), backgroundColor: Colors.red),
+                    );
+                  }
+                });
               }
             },
             child: const Text('Guardar'),

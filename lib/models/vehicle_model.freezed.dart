@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Vehicle {
 
- String? get id; String get userId; String get brand; String get model; int get year; String get plate; int get initialOdometer; double get fuelEfficiency;// In km per liter
+ String? get id; String get userId; String get brand; String get model; int get year; String get plate; double get fuelEfficiency;// In km per liter
  String? get nickname;@JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson) Timestamp get createdAt;
 /// Create a copy of Vehicle
 /// with the given fields replaced by the non-null parameter values.
@@ -29,16 +29,16 @@ $VehicleCopyWith<Vehicle> get copyWith => _$VehicleCopyWithImpl<Vehicle>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Vehicle&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.brand, brand) || other.brand == brand)&&(identical(other.model, model) || other.model == model)&&(identical(other.year, year) || other.year == year)&&(identical(other.plate, plate) || other.plate == plate)&&(identical(other.initialOdometer, initialOdometer) || other.initialOdometer == initialOdometer)&&(identical(other.fuelEfficiency, fuelEfficiency) || other.fuelEfficiency == fuelEfficiency)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Vehicle&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.brand, brand) || other.brand == brand)&&(identical(other.model, model) || other.model == model)&&(identical(other.year, year) || other.year == year)&&(identical(other.plate, plate) || other.plate == plate)&&(identical(other.fuelEfficiency, fuelEfficiency) || other.fuelEfficiency == fuelEfficiency)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,brand,model,year,plate,initialOdometer,fuelEfficiency,nickname,createdAt);
+int get hashCode => Object.hash(runtimeType,id,userId,brand,model,year,plate,fuelEfficiency,nickname,createdAt);
 
 @override
 String toString() {
-  return 'Vehicle(id: $id, userId: $userId, brand: $brand, model: $model, year: $year, plate: $plate, initialOdometer: $initialOdometer, fuelEfficiency: $fuelEfficiency, nickname: $nickname, createdAt: $createdAt)';
+  return 'Vehicle(id: $id, userId: $userId, brand: $brand, model: $model, year: $year, plate: $plate, fuelEfficiency: $fuelEfficiency, nickname: $nickname, createdAt: $createdAt)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $VehicleCopyWith<$Res>  {
   factory $VehicleCopyWith(Vehicle value, $Res Function(Vehicle) _then) = _$VehicleCopyWithImpl;
 @useResult
 $Res call({
- String? id, String userId, String brand, String model, int year, String plate, int initialOdometer, double fuelEfficiency, String? nickname,@JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson) Timestamp createdAt
+ String? id, String userId, String brand, String model, int year, String plate, double fuelEfficiency, String? nickname,@JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson) Timestamp createdAt
 });
 
 
@@ -66,7 +66,7 @@ class _$VehicleCopyWithImpl<$Res>
 
 /// Create a copy of Vehicle
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? userId = null,Object? brand = null,Object? model = null,Object? year = null,Object? plate = null,Object? initialOdometer = null,Object? fuelEfficiency = null,Object? nickname = freezed,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? userId = null,Object? brand = null,Object? model = null,Object? year = null,Object? plate = null,Object? fuelEfficiency = null,Object? nickname = freezed,Object? createdAt = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -74,8 +74,7 @@ as String,brand: null == brand ? _self.brand : brand // ignore: cast_nullable_to
 as String,model: null == model ? _self.model : model // ignore: cast_nullable_to_non_nullable
 as String,year: null == year ? _self.year : year // ignore: cast_nullable_to_non_nullable
 as int,plate: null == plate ? _self.plate : plate // ignore: cast_nullable_to_non_nullable
-as String,initialOdometer: null == initialOdometer ? _self.initialOdometer : initialOdometer // ignore: cast_nullable_to_non_nullable
-as int,fuelEfficiency: null == fuelEfficiency ? _self.fuelEfficiency : fuelEfficiency // ignore: cast_nullable_to_non_nullable
+as String,fuelEfficiency: null == fuelEfficiency ? _self.fuelEfficiency : fuelEfficiency // ignore: cast_nullable_to_non_nullable
 as double,nickname: freezed == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as Timestamp,
@@ -163,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String userId,  String brand,  String model,  int year,  String plate,  int initialOdometer,  double fuelEfficiency,  String? nickname, @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)  Timestamp createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String userId,  String brand,  String model,  int year,  String plate,  double fuelEfficiency,  String? nickname, @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)  Timestamp createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Vehicle() when $default != null:
-return $default(_that.id,_that.userId,_that.brand,_that.model,_that.year,_that.plate,_that.initialOdometer,_that.fuelEfficiency,_that.nickname,_that.createdAt);case _:
+return $default(_that.id,_that.userId,_that.brand,_that.model,_that.year,_that.plate,_that.fuelEfficiency,_that.nickname,_that.createdAt);case _:
   return orElse();
 
 }
@@ -184,10 +183,10 @@ return $default(_that.id,_that.userId,_that.brand,_that.model,_that.year,_that.p
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String userId,  String brand,  String model,  int year,  String plate,  int initialOdometer,  double fuelEfficiency,  String? nickname, @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)  Timestamp createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String userId,  String brand,  String model,  int year,  String plate,  double fuelEfficiency,  String? nickname, @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)  Timestamp createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _Vehicle():
-return $default(_that.id,_that.userId,_that.brand,_that.model,_that.year,_that.plate,_that.initialOdometer,_that.fuelEfficiency,_that.nickname,_that.createdAt);case _:
+return $default(_that.id,_that.userId,_that.brand,_that.model,_that.year,_that.plate,_that.fuelEfficiency,_that.nickname,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +203,10 @@ return $default(_that.id,_that.userId,_that.brand,_that.model,_that.year,_that.p
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String userId,  String brand,  String model,  int year,  String plate,  int initialOdometer,  double fuelEfficiency,  String? nickname, @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)  Timestamp createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String userId,  String brand,  String model,  int year,  String plate,  double fuelEfficiency,  String? nickname, @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson)  Timestamp createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Vehicle() when $default != null:
-return $default(_that.id,_that.userId,_that.brand,_that.model,_that.year,_that.plate,_that.initialOdometer,_that.fuelEfficiency,_that.nickname,_that.createdAt);case _:
+return $default(_that.id,_that.userId,_that.brand,_that.model,_that.year,_that.plate,_that.fuelEfficiency,_that.nickname,_that.createdAt);case _:
   return null;
 
 }
@@ -219,7 +218,7 @@ return $default(_that.id,_that.userId,_that.brand,_that.model,_that.year,_that.p
 @JsonSerializable()
 
 class _Vehicle implements Vehicle {
-  const _Vehicle({this.id, required this.userId, required this.brand, required this.model, required this.year, required this.plate, required this.initialOdometer, required this.fuelEfficiency, this.nickname, @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson) required this.createdAt});
+  const _Vehicle({this.id, required this.userId, required this.brand, required this.model, required this.year, required this.plate, required this.fuelEfficiency, this.nickname, @JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson) required this.createdAt});
   factory _Vehicle.fromJson(Map<String, dynamic> json) => _$VehicleFromJson(json);
 
 @override final  String? id;
@@ -228,7 +227,6 @@ class _Vehicle implements Vehicle {
 @override final  String model;
 @override final  int year;
 @override final  String plate;
-@override final  int initialOdometer;
 @override final  double fuelEfficiency;
 // In km per liter
 @override final  String? nickname;
@@ -247,16 +245,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Vehicle&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.brand, brand) || other.brand == brand)&&(identical(other.model, model) || other.model == model)&&(identical(other.year, year) || other.year == year)&&(identical(other.plate, plate) || other.plate == plate)&&(identical(other.initialOdometer, initialOdometer) || other.initialOdometer == initialOdometer)&&(identical(other.fuelEfficiency, fuelEfficiency) || other.fuelEfficiency == fuelEfficiency)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Vehicle&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.brand, brand) || other.brand == brand)&&(identical(other.model, model) || other.model == model)&&(identical(other.year, year) || other.year == year)&&(identical(other.plate, plate) || other.plate == plate)&&(identical(other.fuelEfficiency, fuelEfficiency) || other.fuelEfficiency == fuelEfficiency)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,brand,model,year,plate,initialOdometer,fuelEfficiency,nickname,createdAt);
+int get hashCode => Object.hash(runtimeType,id,userId,brand,model,year,plate,fuelEfficiency,nickname,createdAt);
 
 @override
 String toString() {
-  return 'Vehicle(id: $id, userId: $userId, brand: $brand, model: $model, year: $year, plate: $plate, initialOdometer: $initialOdometer, fuelEfficiency: $fuelEfficiency, nickname: $nickname, createdAt: $createdAt)';
+  return 'Vehicle(id: $id, userId: $userId, brand: $brand, model: $model, year: $year, plate: $plate, fuelEfficiency: $fuelEfficiency, nickname: $nickname, createdAt: $createdAt)';
 }
 
 
@@ -267,7 +265,7 @@ abstract mixin class _$VehicleCopyWith<$Res> implements $VehicleCopyWith<$Res> {
   factory _$VehicleCopyWith(_Vehicle value, $Res Function(_Vehicle) _then) = __$VehicleCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, String userId, String brand, String model, int year, String plate, int initialOdometer, double fuelEfficiency, String? nickname,@JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson) Timestamp createdAt
+ String? id, String userId, String brand, String model, int year, String plate, double fuelEfficiency, String? nickname,@JsonKey(fromJson: _timestampFromJson, toJson: _timestampToJson) Timestamp createdAt
 });
 
 
@@ -284,7 +282,7 @@ class __$VehicleCopyWithImpl<$Res>
 
 /// Create a copy of Vehicle
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? userId = null,Object? brand = null,Object? model = null,Object? year = null,Object? plate = null,Object? initialOdometer = null,Object? fuelEfficiency = null,Object? nickname = freezed,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? userId = null,Object? brand = null,Object? model = null,Object? year = null,Object? plate = null,Object? fuelEfficiency = null,Object? nickname = freezed,Object? createdAt = null,}) {
   return _then(_Vehicle(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -292,8 +290,7 @@ as String,brand: null == brand ? _self.brand : brand // ignore: cast_nullable_to
 as String,model: null == model ? _self.model : model // ignore: cast_nullable_to_non_nullable
 as String,year: null == year ? _self.year : year // ignore: cast_nullable_to_non_nullable
 as int,plate: null == plate ? _self.plate : plate // ignore: cast_nullable_to_non_nullable
-as String,initialOdometer: null == initialOdometer ? _self.initialOdometer : initialOdometer // ignore: cast_nullable_to_non_nullable
-as int,fuelEfficiency: null == fuelEfficiency ? _self.fuelEfficiency : fuelEfficiency // ignore: cast_nullable_to_non_nullable
+as String,fuelEfficiency: null == fuelEfficiency ? _self.fuelEfficiency : fuelEfficiency // ignore: cast_nullable_to_non_nullable
 as double,nickname: freezed == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as Timestamp,

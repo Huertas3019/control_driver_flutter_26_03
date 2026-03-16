@@ -26,6 +26,7 @@ abstract class Expense with _$Expense {
     String? description,
     @Default(0.0) double? liters,
     @Default(0.0) double? pricePerLiter,
+    @Default(false) bool isCash, // Nuevo campo para trackear pago en efectivo
     required String category,
   }) = _Expense;
 

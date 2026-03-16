@@ -17,6 +17,7 @@ _Expense _$ExpenseFromJson(Map<String, dynamic> json) => _Expense(
   description: json['description'] as String?,
   liters: (json['liters'] as num?)?.toDouble() ?? 0.0,
   pricePerLiter: (json['pricePerLiter'] as num?)?.toDouble() ?? 0.0,
+  isCash: json['isCash'] as bool? ?? false,
   category: json['category'] as String,
 );
 
@@ -31,6 +32,7 @@ Map<String, dynamic> _$ExpenseToJson(_Expense instance) => <String, dynamic>{
   'description': instance.description,
   'liters': instance.liters,
   'pricePerLiter': instance.pricePerLiter,
+  'isCash': instance.isCash,
   'category': instance.category,
 };
 
