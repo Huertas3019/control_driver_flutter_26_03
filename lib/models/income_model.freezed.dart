@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Income {
 
- String? get id; String get vehicleId; String get userId; DateTime get date; String get platform; int get initialOdometer; int get finalOdometer; double get subtotalEarning; double? get extraEarning; double get fuelCostForDay; int get kilometersDriven; double get totalEarning;
+ String? get id; String get vehicleId; String get userId; DateTime get date; String get platform; int get initialOdometer; int? get finalOdometer; double? get subtotalEarning; double? get extraEarning; double get fuelCostForDay; int get kilometersDriven; double get totalEarning; bool get isCompleted;
 /// Create a copy of Income
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $IncomeCopyWith<Income> get copyWith => _$IncomeCopyWithImpl<Income>(this as Inc
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Income&&(identical(other.id, id) || other.id == id)&&(identical(other.vehicleId, vehicleId) || other.vehicleId == vehicleId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.date, date) || other.date == date)&&(identical(other.platform, platform) || other.platform == platform)&&(identical(other.initialOdometer, initialOdometer) || other.initialOdometer == initialOdometer)&&(identical(other.finalOdometer, finalOdometer) || other.finalOdometer == finalOdometer)&&(identical(other.subtotalEarning, subtotalEarning) || other.subtotalEarning == subtotalEarning)&&(identical(other.extraEarning, extraEarning) || other.extraEarning == extraEarning)&&(identical(other.fuelCostForDay, fuelCostForDay) || other.fuelCostForDay == fuelCostForDay)&&(identical(other.kilometersDriven, kilometersDriven) || other.kilometersDriven == kilometersDriven)&&(identical(other.totalEarning, totalEarning) || other.totalEarning == totalEarning));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Income&&(identical(other.id, id) || other.id == id)&&(identical(other.vehicleId, vehicleId) || other.vehicleId == vehicleId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.date, date) || other.date == date)&&(identical(other.platform, platform) || other.platform == platform)&&(identical(other.initialOdometer, initialOdometer) || other.initialOdometer == initialOdometer)&&(identical(other.finalOdometer, finalOdometer) || other.finalOdometer == finalOdometer)&&(identical(other.subtotalEarning, subtotalEarning) || other.subtotalEarning == subtotalEarning)&&(identical(other.extraEarning, extraEarning) || other.extraEarning == extraEarning)&&(identical(other.fuelCostForDay, fuelCostForDay) || other.fuelCostForDay == fuelCostForDay)&&(identical(other.kilometersDriven, kilometersDriven) || other.kilometersDriven == kilometersDriven)&&(identical(other.totalEarning, totalEarning) || other.totalEarning == totalEarning)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,vehicleId,userId,date,platform,initialOdometer,finalOdometer,subtotalEarning,extraEarning,fuelCostForDay,kilometersDriven,totalEarning);
+int get hashCode => Object.hash(runtimeType,id,vehicleId,userId,date,platform,initialOdometer,finalOdometer,subtotalEarning,extraEarning,fuelCostForDay,kilometersDriven,totalEarning,isCompleted);
 
 @override
 String toString() {
-  return 'Income(id: $id, vehicleId: $vehicleId, userId: $userId, date: $date, platform: $platform, initialOdometer: $initialOdometer, finalOdometer: $finalOdometer, subtotalEarning: $subtotalEarning, extraEarning: $extraEarning, fuelCostForDay: $fuelCostForDay, kilometersDriven: $kilometersDriven, totalEarning: $totalEarning)';
+  return 'Income(id: $id, vehicleId: $vehicleId, userId: $userId, date: $date, platform: $platform, initialOdometer: $initialOdometer, finalOdometer: $finalOdometer, subtotalEarning: $subtotalEarning, extraEarning: $extraEarning, fuelCostForDay: $fuelCostForDay, kilometersDriven: $kilometersDriven, totalEarning: $totalEarning, isCompleted: $isCompleted)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $IncomeCopyWith<$Res>  {
   factory $IncomeCopyWith(Income value, $Res Function(Income) _then) = _$IncomeCopyWithImpl;
 @useResult
 $Res call({
- String? id, String vehicleId, String userId, DateTime date, String platform, int initialOdometer, int finalOdometer, double subtotalEarning, double? extraEarning, double fuelCostForDay, int kilometersDriven, double totalEarning
+ String? id, String vehicleId, String userId, DateTime date, String platform, int initialOdometer, int? finalOdometer, double? subtotalEarning, double? extraEarning, double fuelCostForDay, int kilometersDriven, double totalEarning, bool isCompleted
 });
 
 
@@ -65,7 +65,7 @@ class _$IncomeCopyWithImpl<$Res>
 
 /// Create a copy of Income
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? vehicleId = null,Object? userId = null,Object? date = null,Object? platform = null,Object? initialOdometer = null,Object? finalOdometer = null,Object? subtotalEarning = null,Object? extraEarning = freezed,Object? fuelCostForDay = null,Object? kilometersDriven = null,Object? totalEarning = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? vehicleId = null,Object? userId = null,Object? date = null,Object? platform = null,Object? initialOdometer = null,Object? finalOdometer = freezed,Object? subtotalEarning = freezed,Object? extraEarning = freezed,Object? fuelCostForDay = null,Object? kilometersDriven = null,Object? totalEarning = null,Object? isCompleted = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,vehicleId: null == vehicleId ? _self.vehicleId : vehicleId // ignore: cast_nullable_to_non_nullable
@@ -73,13 +73,14 @@ as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullabl
 as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,platform: null == platform ? _self.platform : platform // ignore: cast_nullable_to_non_nullable
 as String,initialOdometer: null == initialOdometer ? _self.initialOdometer : initialOdometer // ignore: cast_nullable_to_non_nullable
-as int,finalOdometer: null == finalOdometer ? _self.finalOdometer : finalOdometer // ignore: cast_nullable_to_non_nullable
-as int,subtotalEarning: null == subtotalEarning ? _self.subtotalEarning : subtotalEarning // ignore: cast_nullable_to_non_nullable
-as double,extraEarning: freezed == extraEarning ? _self.extraEarning : extraEarning // ignore: cast_nullable_to_non_nullable
+as int,finalOdometer: freezed == finalOdometer ? _self.finalOdometer : finalOdometer // ignore: cast_nullable_to_non_nullable
+as int?,subtotalEarning: freezed == subtotalEarning ? _self.subtotalEarning : subtotalEarning // ignore: cast_nullable_to_non_nullable
+as double?,extraEarning: freezed == extraEarning ? _self.extraEarning : extraEarning // ignore: cast_nullable_to_non_nullable
 as double?,fuelCostForDay: null == fuelCostForDay ? _self.fuelCostForDay : fuelCostForDay // ignore: cast_nullable_to_non_nullable
 as double,kilometersDriven: null == kilometersDriven ? _self.kilometersDriven : kilometersDriven // ignore: cast_nullable_to_non_nullable
 as int,totalEarning: null == totalEarning ? _self.totalEarning : totalEarning // ignore: cast_nullable_to_non_nullable
-as double,
+as double,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -164,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String vehicleId,  String userId,  DateTime date,  String platform,  int initialOdometer,  int finalOdometer,  double subtotalEarning,  double? extraEarning,  double fuelCostForDay,  int kilometersDriven,  double totalEarning)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String vehicleId,  String userId,  DateTime date,  String platform,  int initialOdometer,  int? finalOdometer,  double? subtotalEarning,  double? extraEarning,  double fuelCostForDay,  int kilometersDriven,  double totalEarning,  bool isCompleted)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Income() when $default != null:
-return $default(_that.id,_that.vehicleId,_that.userId,_that.date,_that.platform,_that.initialOdometer,_that.finalOdometer,_that.subtotalEarning,_that.extraEarning,_that.fuelCostForDay,_that.kilometersDriven,_that.totalEarning);case _:
+return $default(_that.id,_that.vehicleId,_that.userId,_that.date,_that.platform,_that.initialOdometer,_that.finalOdometer,_that.subtotalEarning,_that.extraEarning,_that.fuelCostForDay,_that.kilometersDriven,_that.totalEarning,_that.isCompleted);case _:
   return orElse();
 
 }
@@ -185,10 +186,10 @@ return $default(_that.id,_that.vehicleId,_that.userId,_that.date,_that.platform,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String vehicleId,  String userId,  DateTime date,  String platform,  int initialOdometer,  int finalOdometer,  double subtotalEarning,  double? extraEarning,  double fuelCostForDay,  int kilometersDriven,  double totalEarning)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String vehicleId,  String userId,  DateTime date,  String platform,  int initialOdometer,  int? finalOdometer,  double? subtotalEarning,  double? extraEarning,  double fuelCostForDay,  int kilometersDriven,  double totalEarning,  bool isCompleted)  $default,) {final _that = this;
 switch (_that) {
 case _Income():
-return $default(_that.id,_that.vehicleId,_that.userId,_that.date,_that.platform,_that.initialOdometer,_that.finalOdometer,_that.subtotalEarning,_that.extraEarning,_that.fuelCostForDay,_that.kilometersDriven,_that.totalEarning);case _:
+return $default(_that.id,_that.vehicleId,_that.userId,_that.date,_that.platform,_that.initialOdometer,_that.finalOdometer,_that.subtotalEarning,_that.extraEarning,_that.fuelCostForDay,_that.kilometersDriven,_that.totalEarning,_that.isCompleted);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +206,10 @@ return $default(_that.id,_that.vehicleId,_that.userId,_that.date,_that.platform,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String vehicleId,  String userId,  DateTime date,  String platform,  int initialOdometer,  int finalOdometer,  double subtotalEarning,  double? extraEarning,  double fuelCostForDay,  int kilometersDriven,  double totalEarning)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String vehicleId,  String userId,  DateTime date,  String platform,  int initialOdometer,  int? finalOdometer,  double? subtotalEarning,  double? extraEarning,  double fuelCostForDay,  int kilometersDriven,  double totalEarning,  bool isCompleted)?  $default,) {final _that = this;
 switch (_that) {
 case _Income() when $default != null:
-return $default(_that.id,_that.vehicleId,_that.userId,_that.date,_that.platform,_that.initialOdometer,_that.finalOdometer,_that.subtotalEarning,_that.extraEarning,_that.fuelCostForDay,_that.kilometersDriven,_that.totalEarning);case _:
+return $default(_that.id,_that.vehicleId,_that.userId,_that.date,_that.platform,_that.initialOdometer,_that.finalOdometer,_that.subtotalEarning,_that.extraEarning,_that.fuelCostForDay,_that.kilometersDriven,_that.totalEarning,_that.isCompleted);case _:
   return null;
 
 }
@@ -220,7 +221,7 @@ return $default(_that.id,_that.vehicleId,_that.userId,_that.date,_that.platform,
 @JsonSerializable()
 
 class _Income implements Income {
-  const _Income({this.id, required this.vehicleId, required this.userId, required this.date, required this.platform, required this.initialOdometer, required this.finalOdometer, required this.subtotalEarning, this.extraEarning = 0.0, this.fuelCostForDay = 0.0, this.kilometersDriven = 0, this.totalEarning = 0.0});
+  const _Income({this.id, required this.vehicleId, required this.userId, required this.date, required this.platform, required this.initialOdometer, this.finalOdometer, this.subtotalEarning, this.extraEarning = 0.0, this.fuelCostForDay = 0.0, this.kilometersDriven = 0, this.totalEarning = 0.0, this.isCompleted = false});
   factory _Income.fromJson(Map<String, dynamic> json) => _$IncomeFromJson(json);
 
 @override final  String? id;
@@ -229,12 +230,13 @@ class _Income implements Income {
 @override final  DateTime date;
 @override final  String platform;
 @override final  int initialOdometer;
-@override final  int finalOdometer;
-@override final  double subtotalEarning;
+@override final  int? finalOdometer;
+@override final  double? subtotalEarning;
 @override@JsonKey() final  double? extraEarning;
 @override@JsonKey() final  double fuelCostForDay;
 @override@JsonKey() final  int kilometersDriven;
 @override@JsonKey() final  double totalEarning;
+@override@JsonKey() final  bool isCompleted;
 
 /// Create a copy of Income
 /// with the given fields replaced by the non-null parameter values.
@@ -249,16 +251,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Income&&(identical(other.id, id) || other.id == id)&&(identical(other.vehicleId, vehicleId) || other.vehicleId == vehicleId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.date, date) || other.date == date)&&(identical(other.platform, platform) || other.platform == platform)&&(identical(other.initialOdometer, initialOdometer) || other.initialOdometer == initialOdometer)&&(identical(other.finalOdometer, finalOdometer) || other.finalOdometer == finalOdometer)&&(identical(other.subtotalEarning, subtotalEarning) || other.subtotalEarning == subtotalEarning)&&(identical(other.extraEarning, extraEarning) || other.extraEarning == extraEarning)&&(identical(other.fuelCostForDay, fuelCostForDay) || other.fuelCostForDay == fuelCostForDay)&&(identical(other.kilometersDriven, kilometersDriven) || other.kilometersDriven == kilometersDriven)&&(identical(other.totalEarning, totalEarning) || other.totalEarning == totalEarning));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Income&&(identical(other.id, id) || other.id == id)&&(identical(other.vehicleId, vehicleId) || other.vehicleId == vehicleId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.date, date) || other.date == date)&&(identical(other.platform, platform) || other.platform == platform)&&(identical(other.initialOdometer, initialOdometer) || other.initialOdometer == initialOdometer)&&(identical(other.finalOdometer, finalOdometer) || other.finalOdometer == finalOdometer)&&(identical(other.subtotalEarning, subtotalEarning) || other.subtotalEarning == subtotalEarning)&&(identical(other.extraEarning, extraEarning) || other.extraEarning == extraEarning)&&(identical(other.fuelCostForDay, fuelCostForDay) || other.fuelCostForDay == fuelCostForDay)&&(identical(other.kilometersDriven, kilometersDriven) || other.kilometersDriven == kilometersDriven)&&(identical(other.totalEarning, totalEarning) || other.totalEarning == totalEarning)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,vehicleId,userId,date,platform,initialOdometer,finalOdometer,subtotalEarning,extraEarning,fuelCostForDay,kilometersDriven,totalEarning);
+int get hashCode => Object.hash(runtimeType,id,vehicleId,userId,date,platform,initialOdometer,finalOdometer,subtotalEarning,extraEarning,fuelCostForDay,kilometersDriven,totalEarning,isCompleted);
 
 @override
 String toString() {
-  return 'Income(id: $id, vehicleId: $vehicleId, userId: $userId, date: $date, platform: $platform, initialOdometer: $initialOdometer, finalOdometer: $finalOdometer, subtotalEarning: $subtotalEarning, extraEarning: $extraEarning, fuelCostForDay: $fuelCostForDay, kilometersDriven: $kilometersDriven, totalEarning: $totalEarning)';
+  return 'Income(id: $id, vehicleId: $vehicleId, userId: $userId, date: $date, platform: $platform, initialOdometer: $initialOdometer, finalOdometer: $finalOdometer, subtotalEarning: $subtotalEarning, extraEarning: $extraEarning, fuelCostForDay: $fuelCostForDay, kilometersDriven: $kilometersDriven, totalEarning: $totalEarning, isCompleted: $isCompleted)';
 }
 
 
@@ -269,7 +271,7 @@ abstract mixin class _$IncomeCopyWith<$Res> implements $IncomeCopyWith<$Res> {
   factory _$IncomeCopyWith(_Income value, $Res Function(_Income) _then) = __$IncomeCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, String vehicleId, String userId, DateTime date, String platform, int initialOdometer, int finalOdometer, double subtotalEarning, double? extraEarning, double fuelCostForDay, int kilometersDriven, double totalEarning
+ String? id, String vehicleId, String userId, DateTime date, String platform, int initialOdometer, int? finalOdometer, double? subtotalEarning, double? extraEarning, double fuelCostForDay, int kilometersDriven, double totalEarning, bool isCompleted
 });
 
 
@@ -286,7 +288,7 @@ class __$IncomeCopyWithImpl<$Res>
 
 /// Create a copy of Income
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? vehicleId = null,Object? userId = null,Object? date = null,Object? platform = null,Object? initialOdometer = null,Object? finalOdometer = null,Object? subtotalEarning = null,Object? extraEarning = freezed,Object? fuelCostForDay = null,Object? kilometersDriven = null,Object? totalEarning = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? vehicleId = null,Object? userId = null,Object? date = null,Object? platform = null,Object? initialOdometer = null,Object? finalOdometer = freezed,Object? subtotalEarning = freezed,Object? extraEarning = freezed,Object? fuelCostForDay = null,Object? kilometersDriven = null,Object? totalEarning = null,Object? isCompleted = null,}) {
   return _then(_Income(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,vehicleId: null == vehicleId ? _self.vehicleId : vehicleId // ignore: cast_nullable_to_non_nullable
@@ -294,13 +296,14 @@ as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullabl
 as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,platform: null == platform ? _self.platform : platform // ignore: cast_nullable_to_non_nullable
 as String,initialOdometer: null == initialOdometer ? _self.initialOdometer : initialOdometer // ignore: cast_nullable_to_non_nullable
-as int,finalOdometer: null == finalOdometer ? _self.finalOdometer : finalOdometer // ignore: cast_nullable_to_non_nullable
-as int,subtotalEarning: null == subtotalEarning ? _self.subtotalEarning : subtotalEarning // ignore: cast_nullable_to_non_nullable
-as double,extraEarning: freezed == extraEarning ? _self.extraEarning : extraEarning // ignore: cast_nullable_to_non_nullable
+as int,finalOdometer: freezed == finalOdometer ? _self.finalOdometer : finalOdometer // ignore: cast_nullable_to_non_nullable
+as int?,subtotalEarning: freezed == subtotalEarning ? _self.subtotalEarning : subtotalEarning // ignore: cast_nullable_to_non_nullable
+as double?,extraEarning: freezed == extraEarning ? _self.extraEarning : extraEarning // ignore: cast_nullable_to_non_nullable
 as double?,fuelCostForDay: null == fuelCostForDay ? _self.fuelCostForDay : fuelCostForDay // ignore: cast_nullable_to_non_nullable
 as double,kilometersDriven: null == kilometersDriven ? _self.kilometersDriven : kilometersDriven // ignore: cast_nullable_to_non_nullable
 as int,totalEarning: null == totalEarning ? _self.totalEarning : totalEarning // ignore: cast_nullable_to_non_nullable
-as double,
+as double,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

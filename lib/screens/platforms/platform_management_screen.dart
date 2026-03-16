@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/platform_model.dart';
 import 'package:myapp/providers/platform_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 class PlatformManagementScreen extends StatelessWidget {
@@ -15,6 +16,16 @@ class PlatformManagementScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/settings');
+            }
+          },
+        ),
         title: const Text('Mis Plataformas'),
         actions: [
           IconButton(

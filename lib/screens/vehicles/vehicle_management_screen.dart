@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myapp/models/vehicle_model.dart';
 import 'package:myapp/providers/vehicle_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -16,6 +17,16 @@ class VehicleManagementScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/settings');
+            }
+          },
+        ),
         title: const Text('Mis Vehículos'),
         actions: [
           IconButton(

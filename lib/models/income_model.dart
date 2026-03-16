@@ -14,12 +14,13 @@ abstract class Income with _$Income {
     required DateTime date,
     required String platform,
     required int initialOdometer,
-    required int finalOdometer,
-    required double subtotalEarning,
+    int? finalOdometer,
+    double? subtotalEarning,
     @Default(0.0) double? extraEarning,
     @Default(0.0) double fuelCostForDay,
     @Default(0) int kilometersDriven,
     @Default(0.0) double totalEarning,
+    @Default(false) bool isCompleted,
   }) = _Income;
 
   factory Income.fromJson(Map<String, dynamic> json) => _$IncomeFromJson(json);

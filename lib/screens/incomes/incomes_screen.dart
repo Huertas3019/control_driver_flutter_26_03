@@ -4,6 +4,7 @@ import 'package:myapp/models/income_model.dart';
 import 'package:myapp/providers/income_provider.dart';
 import 'package:myapp/providers/vehicle_provider.dart';
 import 'package:myapp/providers/platform_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 class IncomesScreen extends StatelessWidget {
@@ -13,7 +14,19 @@ class IncomesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final incomeProvider = context.watch<IncomeProvider>();
     return Scaffold(
-      appBar: AppBar(title: const Text('Ingresos y Jornadas')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+        ),
+        title: const Text('Ingresos y Jornadas'),
+      ),
       body: incomeProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : incomeProvider.incomes.isEmpty
@@ -22,17 +35,28 @@ class IncomesScreen extends StatelessWidget {
                   itemCount: incomeProvider.incomes.length,
                   itemBuilder: (context, index) {
                     final income = incomeProvider.incomes[index];
+                    final isCompleted = income.isCompleted;
                     return Card(
                       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: ListTile(
-                        leading: const CircleAvatar(child: Icon(Icons.attach_money)),
-                        title: Text('${income.platform} - \$${income.totalEarning.toStringAsFixed(2)}'),
-                        subtitle: Text('${income.date.day}/${income.date.month}/${income.date.year} | Kms: ${income.kilometersDriven}'),
+                        leading: CircleAvatar(
+                          backgroundColor: isCompleted ? Colors.green.shade100 : Colors.orange.shade100,
+                          child: Icon(
+                            isCompleted ? Icons.check_circle : Icons.timer,
+                            color: isCompleted ? Colors.green : Colors.orange,
+                          ),
+                        ),
+                        title: Text('${income.platform} - ${isCompleted ? '\$${income.totalEarning.toStringAsFixed(2)}' : 'En curso'}'),
+                        subtitle: Text('${income.date.day}/${income.date.month}/${income.date.year}${isCompleted ? ' | Kms: ${income.kilometersDriven}' : ' | Inició: ${income.initialOdometer}km'}'),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blue),
+                              icon: Icon(
+                                isCompleted ? Icons.edit : Icons.flag,
+                                color: isCompleted ? Colors.blue : Colors.orange,
+                              ),
+                              tooltip: isCompleted ? 'Editar' : 'Finalizar Jornada',
                               onPressed: () => _showIncomeDialog(context, incomeProvider, income: income),
                             ),
                             IconButton(
@@ -54,9 +78,12 @@ class IncomesScreen extends StatelessWidget {
 
   void _showIncomeDialog(BuildContext context, IncomeProvider provider, {Income? income}) {
     final formKey = GlobalKey<FormState>();
+    final isEditing = income != null;
+    final isCompleting = isEditing && !income.isCompleted;
+
     final initialOdometerCtrl = TextEditingController(text: income?.initialOdometer.toString());
-    final finalOdometerCtrl = TextEditingController(text: income?.finalOdometer.toString());
-    final subtotalCtrl = TextEditingController(text: income?.subtotalEarning.toString());
+    final finalOdometerCtrl = TextEditingController(text: isCompleting ? '' : income?.finalOdometer?.toString());
+    final subtotalCtrl = TextEditingController(text: isCompleting ? '' : income?.subtotalEarning?.toString());
     final extraEarningCtrl = TextEditingController(text: income?.extraEarning?.toString());
     final fuelCostCtrl = TextEditingController(text: income?.fuelCostForDay.toString());
     String? selectedPlatform = income?.platform;
@@ -67,48 +94,66 @@ class IncomesScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(income == null ? 'Registrar Jornada' : 'Editar Jornada'),
+        title: Text(income == null 
+            ? 'Iniciar Jornada' 
+            : (isCompleting ? 'Finalizar Jornada' : 'Editar Jornada')),
         content: Form(
           key: formKey,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                DropdownButtonFormField<String>(
-                  initialValue: selectedPlatform,
-                  hint: const Text('Plataforma (Uber, Didi, etc.)'),
-                  items: platforms.map((p) => DropdownMenuItem(value: p.name, child: Text(p.name))).toList(),
-                  onChanged: (value) => selectedPlatform = value,
-                  validator: (value) => value == null ? 'Selecciona una plataforma' : null,
-                ),
-                 TextFormField(
+                if (!isEditing)
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedPlatform,
+                    hint: const Text('Plataforma (Uber, Didi, etc.)'),
+                    items: platforms.map((p) => DropdownMenuItem(value: p.name, child: Text(p.name))).toList(),
+                    onChanged: (value) => selectedPlatform = value,
+                    validator: (value) => value == null ? 'Selecciona una plataforma' : null,
+                  ),
+                if (isEditing)
+                   Padding(
+                     padding: const EdgeInsets.symmetric(vertical: 8.0),
+                     child: Text('Plataforma: ${income.platform}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                   ),
+                TextFormField(
                   controller: initialOdometerCtrl,
                   decoration: const InputDecoration(labelText: 'Odómetro Inicial (kms)'),
                   keyboardType: TextInputType.number,
+                  enabled: !isEditing, // No permitir cambiar odo inicial al finalizar
                   validator: (value) => value == null || int.tryParse(value) == null ? 'Valor inválido' : null,
                 ),
-                TextFormField(
-                  controller: finalOdometerCtrl,
-                  decoration: const InputDecoration(labelText: 'Odómetro Final (kms)'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) => value == null || int.tryParse(value) == null ? 'Valor inválido' : null,
-                ),
-                TextFormField(
-                  controller: subtotalCtrl,
-                  decoration: const InputDecoration(labelText: 'Subtotal Recaudado'),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (value) => value == null || double.tryParse(value) == null ? 'Valor inválido' : null,
-                ),
-                TextFormField(
-                  controller: extraEarningCtrl,
-                  decoration: const InputDecoration(labelText: 'Ingresos Extra / Propinas'),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                ),
-                TextFormField(
-                  controller: fuelCostCtrl,
-                  decoration: const InputDecoration(labelText: 'Gasto de Combustible Diario (Opcional)'),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                ),
+                if (income == null || income.isCompleted || isCompleting) ...[
+                  if (income != null) // Solo mostrar campos finales si estamos editando/finalizando
+                    ...[
+                      TextFormField(
+                        controller: finalOdometerCtrl,
+                        decoration: const InputDecoration(labelText: 'Odómetro Final (kms)'),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || int.tryParse(value) == null) return 'Valor inválido';
+                          if (int.parse(value) <= int.parse(initialOdometerCtrl.text)) return 'Debe ser mayor al inicial';
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: subtotalCtrl,
+                        decoration: const InputDecoration(labelText: 'Subtotal Recaudado'),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        validator: (value) => value == null || double.tryParse(value) == null ? 'Valor inválido' : null,
+                      ),
+                      TextFormField(
+                        controller: extraEarningCtrl,
+                        decoration: const InputDecoration(labelText: 'Ingresos Extra / Propinas'),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      ),
+                      TextFormField(
+                        controller: fuelCostCtrl,
+                        decoration: const InputDecoration(labelText: 'Gasto de Combustible Diario (Opcional)'),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      ),
+                    ]
+                ],
               ],
             ),
           ),
@@ -124,19 +169,35 @@ class IncomesScreen extends StatelessWidget {
                 }
                 
                 final initOdo = int.parse(initialOdometerCtrl.text);
-                final finalOdo = int.parse(finalOdometerCtrl.text);
-                final subtotal = double.parse(subtotalCtrl.text);
-                final extra = double.tryParse(extraEarningCtrl.text) ?? 0.0;
-                final fuel = double.tryParse(fuelCostCtrl.text) ?? 0.0;
                 
-                final total = subtotal + extra;
-                final kms = finalOdo - initOdo;
+                // Si es solo inicio, los valores finales son nulos/0
+                int? finalOdo;
+                double? subtotal;
+                double extra = 0.0;
+                double fuel = 0.0;
+                double total = 0.0;
+                int kms = 0;
+                bool completed = income?.isCompleted ?? false;
+
+                if (income == null) {
+                  // Iniciando jornada
+                  completed = false;
+                } else {
+                  // Finalizando o Editando
+                  finalOdo = int.parse(finalOdometerCtrl.text);
+                  subtotal = double.parse(subtotalCtrl.text);
+                  extra = double.tryParse(extraEarningCtrl.text) ?? 0.0;
+                  fuel = double.tryParse(fuelCostCtrl.text) ?? 0.0;
+                  total = subtotal + extra;
+                  kms = finalOdo - initOdo;
+                  completed = true;
+                }
 
                 final newIncome = Income(
                   id: income?.id ?? const Uuid().v4(),
                   userId: provider.userId ?? '',
                   vehicleId: vehicleId,
-                  platform: selectedPlatform!,
+                  platform: selectedPlatform ?? income!.platform,
                   date: income?.date ?? DateTime.now(),
                   initialOdometer: initOdo,
                   finalOdometer: finalOdo,
@@ -145,6 +206,7 @@ class IncomesScreen extends StatelessWidget {
                   fuelCostForDay: fuel,
                   kilometersDriven: kms > 0 ? kms : 0,
                   totalEarning: total,
+                  isCompleted: completed,
                 );
 
                 if (income == null) {
@@ -155,7 +217,7 @@ class IncomesScreen extends StatelessWidget {
                 Navigator.of(context).pop();
               }
             },
-            child: const Text('Guardar'),
+            child: Text(income == null ? 'Iniciar' : 'Guardar'),
           ),
         ],
       ),
