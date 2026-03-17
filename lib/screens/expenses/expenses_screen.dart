@@ -47,7 +47,30 @@ class ExpensesScreen extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                       child: ListTile(
                         title: Text(expense.category),
-                        subtitle: Text(expense.description ?? 'Sin descripción'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(expense.description ?? 'Sin descripción'),
+                            if (expense.category == 'Combustible' && expense.pricePerLiter != null)
+                              Builder(
+                                builder: (context) {
+                                  final vehicles = context.read<VehicleProvider>().vehicles;
+                                  final vehicle = vehicles.any((v) => v.id == expense.vehicleId) 
+                                      ? vehicles.firstWhere((v) => v.id == expense.vehicleId)
+                                      : null;
+                                  
+                                  if (vehicle != null && vehicle.fuelEfficiency > 0) {
+                                    final pricePerKm = expense.pricePerLiter! / vehicle.fuelEfficiency;
+                                    return Text(
+                                      'Prec. x KM: \$${pricePerKm.toStringAsFixed(2)}',
+                                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
+                                    );
+                                  }
+                                  return const SizedBox.shrink();
+                                },
+                              ),
+                          ],
+                        ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [

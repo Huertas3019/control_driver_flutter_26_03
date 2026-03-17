@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:myapp/models/expense_model.dart';
 import 'package:myapp/services/firestore_service.dart';
+import 'package:uuid/uuid.dart';
 
 class ExpenseProvider with ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
@@ -45,17 +46,15 @@ class ExpenseProvider with ChangeNotifier {
       path: 'expenses',
       builder: (data, documentId) {
         final doc = {
+          if (data != null) ...data,
           'id': documentId,
-          if (data != null) ...data, // Null-safe spread
         };
         return Expense.fromJson(doc);
       },
-      queryBuilder: (query) => query
-          .where('userId', isEqualTo: _userId)
-          .orderBy('date', descending: true),
+      queryBuilder: (query) => query.where('userId', isEqualTo: _userId),
     )
         .listen((expenses) {
-      _expenses = expenses;
+      _expenses = expenses..sort((a, b) => b.date.compareTo(a.date));
       _isLoading = false;
       notifyListeners();
     }, onError: (error) {
@@ -65,7 +64,8 @@ class ExpenseProvider with ChangeNotifier {
   }
 
   Future<void> addExpense(Expense expense) async {
-    await _firestoreService.addDocument('expenses', expense.toJson());
+    final id = expense.id ?? const Uuid().v4();
+    await _firestoreService.setDocument('expenses', id, expense.copyWith(id: id).toJson());
   }
 
   Future<void> updateExpense(Expense expense) async {

@@ -4,9 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:myapp/providers/expense_provider.dart';
 import 'package:myapp/providers/income_provider.dart';
 import 'package:myapp/providers/vehicle_provider.dart';
-import 'package:myapp/providers/platform_provider.dart';
 import 'package:myapp/models/vehicle_model.dart';
-import 'package:myapp/models/platform_model.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,7 +16,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Vehicle? selectedVehicle;
-  Platform? selectedPlatform;
 
   @override
   void initState() {
@@ -30,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final vehicleProvider = context.watch<VehicleProvider>();
-    final platformProvider = context.watch<PlatformProvider>();
     final incomeProvider = context.watch<IncomeProvider>();
 
     if (selectedVehicle == null && vehicleProvider.vehicles.isNotEmpty) {
@@ -54,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
               _buildFuelPrompt(context, vehicleProvider, context.watch<ExpenseProvider>()),
               const SizedBox(height: 16),
-              _buildPlatformSelector(platformProvider),
               const SizedBox(height: 24),
               _buildFinancialOverview(),
             ],
@@ -67,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _refreshData() async {
     // We call the fetch methods directly. They will notify their listeners.
     context.read<VehicleProvider>().fetchVehicles();
-    context.read<PlatformProvider>().fetchPlatforms();
     context.read<ExpenseProvider>().fetchExpenses();
     context.read<IncomeProvider>().fetchIncomes();
 
@@ -182,50 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPlatformSelector(PlatformProvider provider) {
-    if (provider.isLoading) return const Center(child: CircularProgressIndicator());
-    if (provider.platforms.isEmpty) {
-      return Card(
-        color: Colors.blue.shade50,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              const Icon(Icons.work, size: 48, color: Colors.blueGrey),
-              const SizedBox(height: 8),
-              const Text('Agrega al menos una plataforma de trabajo.', textAlign: TextAlign.center),
-              const SizedBox(height: 12),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.add),
-                label: const Text('Agregar Plataforma'),
-                onPressed: () => context.push('/platforms'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
 
-    return DropdownButtonFormField<Platform>(
-      key: ValueKey(selectedPlatform),
-      initialValue: selectedPlatform,
-      onChanged: (Platform? newValue) {
-        setState(() {
-          selectedPlatform = newValue;
-        });
-      },
-      items: provider.platforms.map<DropdownMenuItem<Platform>>((Platform platform) {
-        return DropdownMenuItem<Platform>(
-          value: platform,
-          child: Text(platform.name),
-        );
-      }).toList(),
-      decoration: const InputDecoration(
-        labelText: 'Plataforma (Opcional)',
-        border: OutlineInputBorder(),
-      ),
-    );
-  }
 
   Widget _buildFinancialOverview() {
     return Consumer2<ExpenseProvider, IncomeProvider>(

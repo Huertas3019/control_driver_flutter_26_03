@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:myapp/models/platform_model.dart';
 import 'package:myapp/services/firestore_service.dart';
+import 'package:uuid/uuid.dart';
 
 class PlatformProvider with ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
@@ -34,15 +35,15 @@ class PlatformProvider with ChangeNotifier {
       path: 'platforms',
       builder: (data, documentId) {
         final doc = {
+          if (data != null) ...data,
           'id': documentId,
-          if (data != null) ...data, // Null-safe spread
         };
         return Platform.fromJson(doc);
       },
-      queryBuilder: (query) => query.where('userId', isEqualTo: _userId).orderBy('name'),
+      queryBuilder: (query) => query.where('userId', isEqualTo: _userId),
     )
         .listen((platforms) {
-      _platforms = platforms;
+      _platforms = platforms..sort((a, b) => a.name.compareTo(b.name));
       _isLoading = false;
       notifyListeners();
     }, onError: (error) {
@@ -52,7 +53,8 @@ class PlatformProvider with ChangeNotifier {
   }
 
   Future<void> addPlatform(Platform platform) async {
-    await _firestoreService.addDocument('platforms', platform.toJson());
+    final id = platform.id ?? const Uuid().v4();
+    await _firestoreService.setDocument('platforms', id, platform.copyWith(id: id).toJson());
   }
 
   Future<void> updatePlatform(Platform platform) async {

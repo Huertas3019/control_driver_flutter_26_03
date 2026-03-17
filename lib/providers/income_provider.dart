@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:myapp/models/income_model.dart';
 import 'package:myapp/services/firestore_service.dart';
+import 'package:uuid/uuid.dart';
 
 class IncomeProvider with ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
@@ -34,17 +35,15 @@ class IncomeProvider with ChangeNotifier {
       path: 'incomes',
       builder: (data, documentId) {
         final doc = {
+          if (data != null) ...data,
           'id': documentId,
-          if (data != null) ...data, // Null-safe spread
         };
         return Income.fromJson(doc);
       },
-      queryBuilder: (query) => query
-          .where('userId', isEqualTo: _userId)
-          .orderBy('date', descending: true),
+      queryBuilder: (query) => query.where('userId', isEqualTo: _userId),
     )
         .listen((incomes) {
-      _incomes = incomes;
+      _incomes = incomes..sort((a, b) => b.date.compareTo(a.date));
       _isLoading = false;
       notifyListeners();
     }, onError: (error) {
@@ -59,7 +58,8 @@ class IncomeProvider with ChangeNotifier {
     if (hasActive && !income.isCompleted) {
        throw Exception('Ya tienes una jornada en curso.');
     }
-    await _firestoreService.addDocument('incomes', income.toJson());
+    final id = income.id ?? const Uuid().v4();
+    await _firestoreService.setDocument('incomes', id, income.copyWith(id: id).toJson());
   }
 
   Future<void> updateIncome(Income income) async {
