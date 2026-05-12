@@ -35,3 +35,14 @@ La aplicación sigue una arquitectura limpia y en capas para la separación de i
   - Navegación gestionada por `go_router`.
   - Ruta inicial (`/`) que dirige a `AuthGate`.
   - Ruta de inicio (`/home`) para usuarios autenticados.
+
+## Plan y Pasos para el Cambio Actual
+
+**Objetivo:** Sincronizar el repositorio local con las últimas actualizaciones de GitHub y preparar la aplicación para una nueva ejecución.
+
+**Pasos:**
+
+1.  **Extraer actualizaciones de GitHub:** Se ejecutó `git pull origin main` para obtener los últimos cambios del repositorio remoto.
+2.  **Actualizar dependencias:** Se ejecutó `flutter pub get` para resolver y descargar cualquier nueva dependencia o actualización de paquetes.
+3.  **Generar archivos de código:** Se ejecutó `dart run build_runner build --delete-conflicting-outputs` para generar archivos de código necesarios (por ejemplo, para `freezed` o `json_serializable`).
+4.  **Iniciar la aplicación:** Se intentó ejecutar la aplicación con `flutter run -d web-server`. (Nota: El proceso se inició pero no se pudo detener directamente a través de comandos del IDE).
