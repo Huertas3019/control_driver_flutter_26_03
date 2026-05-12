@@ -47,8 +47,12 @@ class IncomesScreen extends StatelessWidget {
                             color: isCompleted ? Colors.green : Colors.orange,
                           ),
                         ),
-                        title: Text('${income.platform} - ${isCompleted ? '\$${income.totalEarning.toStringAsFixed(2)}' : 'En curso'}'),
-                        subtitle: Text('${income.date.day}/${income.date.month}/${income.date.year}${isCompleted ? ' | Kms: ${income.kilometersDriven}' : ' | Inició: ${income.initialOdometer}km'}'),
+                        title: Text(
+                          isCompleted 
+                            ? '${income.platform} - Bruto: \$${((income.subtotalEarning ?? 0) + (income.extraEarning ?? 0)).toStringAsFixed(2)} (Neto: \$${income.totalEarning.toStringAsFixed(2)})'
+                            : '${income.platform} - En curso',
+                        ),
+                        subtitle: Text('${income.date.day}/${income.date.month}/${income.date.year}${isCompleted ? ' | Kms: ${income.kilometersDriven} | Nafta: \$${income.fuelCostForDay.toStringAsFixed(2)}' : ' | Inició: ${income.initialOdometer}km'}'),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
