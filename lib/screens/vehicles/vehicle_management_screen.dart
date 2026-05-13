@@ -90,22 +90,26 @@ class VehicleManagementScreen extends StatelessWidget {
                   decoration: const InputDecoration(labelText: 'Marca'),
                   validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
                 ),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: modelController,
                   decoration: const InputDecoration(labelText: 'Modelo'),
                   validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
                 ),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: yearController,
                   decoration: const InputDecoration(labelText: 'Año'),
                   keyboardType: TextInputType.number,
                   validator: (value) => (value == null || int.tryParse(value) == null) ? 'Año inválido' : null,
                 ),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: plateController,
                   decoration: const InputDecoration(labelText: 'Patente'),
                   validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
                 ),
+                const SizedBox(height: 16),
                  TextFormField(
                   controller: fuelEfficiencyController,
                   decoration: const InputDecoration(labelText: 'Rendimiento (km/L)'),

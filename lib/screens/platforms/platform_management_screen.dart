@@ -75,10 +75,13 @@ class PlatformManagementScreen extends StatelessWidget {
         title: Text(platform == null ? 'Añadir Plataforma' : 'Editar Plataforma'),
         content: Form(
           key: formKey,
-          child: TextFormField(
-            controller: nameController,
-            decoration: const InputDecoration(labelText: 'Nombre de la Plataforma'),
-            validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: TextFormField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'Nombre de la Plataforma'),
+              validator: (value) => (value == null || value.isEmpty) ? 'Campo requerido' : null,
+            ),
           ),
         ),
         actions: [

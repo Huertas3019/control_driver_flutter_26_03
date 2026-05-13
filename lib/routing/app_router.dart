@@ -10,7 +10,7 @@ import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/vehicles/vehicle_management_screen.dart';
-import '../screens/reports/reports_screen.dart';
+import '../screens/maintenance/maintenance_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../widgets/scaffold_with_nav_bar.dart';
 
@@ -86,9 +86,9 @@ class AppRouter {
               ),
             ),            
             GoRoute(
-              path: '/reports',
+              path: '/maintenance',
               pageBuilder: (context, state) => const NoTransitionPage(
-                child: ReportsScreen(),
+                child: MaintenanceScreen(),
               ),
             ),
             GoRoute(

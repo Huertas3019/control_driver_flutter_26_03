@@ -13,7 +13,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
       return 1;
     } else if (location.startsWith('/expenses')) {
       return 2;
-    } else if (location.startsWith('/reports')) {
+    } else if (location.startsWith('/maintenance')) {
       return 3;
     } else if (location.startsWith('/settings')) {
       return 4;
@@ -33,7 +33,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
         context.go('/expenses');
         break;
       case 3:
-        context.go('/reports');
+        context.go('/maintenance');
         break;
       case 4:
         context.go('/settings');
@@ -66,9 +66,9 @@ class ScaffoldWithNavBar extends StatelessWidget {
             label: 'Gastos',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            activeIcon: Icon(Icons.bar_chart),
-            label: 'Informes',
+            icon: Icon(Icons.build_outlined),
+            activeIcon: Icon(Icons.build),
+            label: 'Mantenimiento',
           ),
            BottomNavigationBarItem(
             icon: Icon(Icons.settings_outlined),

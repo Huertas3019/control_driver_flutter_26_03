@@ -14,9 +14,39 @@ class ExpenseProvider with ChangeNotifier {
 
   List<Expense> _expenses = [];
   bool _isLoading = false;
+  DateTime _selectedDate = DateTime.now();
 
   List<Expense> get expenses => _expenses;
   bool get isLoading => _isLoading;
+  DateTime get selectedDate => _selectedDate;
+
+  List<Expense> get filteredExpenses {
+    return _expenses.where((expense) {
+      return expense.date.month == _selectedDate.month &&
+          incomeProviderSelectedYear(expense.date);
+    }).toList();
+  }
+
+  bool incomeProviderSelectedYear(DateTime date) => date.year == _selectedDate.year;
+
+  List<Expense> get filteredExpensesWithReference {
+    final filtered = filteredExpenses;
+    
+    // Check if there is any 'nafta' expense in the current filtered month
+    final hasFuelInMonth = filtered.any((e) => e.type == ExpenseType.nafta);
+    
+    if (!hasFuelInMonth) {
+      // Find the absolute latest fuel expense regardless of month
+      try {
+        final latestFuel = _expenses.firstWhere((e) => e.type == ExpenseType.nafta);
+        return [...filtered, latestFuel];
+      } catch (_) {
+        // No fuel expenses at all
+      }
+    }
+    
+    return filtered;
+  }
 
   ExpenseProvider(this._userId) {
     if (_userId != null) {
@@ -33,6 +63,11 @@ class ExpenseProvider with ChangeNotifier {
     } catch (_) {
       return null;
     }
+  }
+
+  void updateFilter(DateTime newDate) {
+    _selectedDate = newDate;
+    notifyListeners();
   }
 
   void fetchExpenses() {

@@ -1,5 +1,5 @@
 name: myapp
-description: "A new Flutter project."
+description: "Control de gastos e ingresos para conductores de plataformas como Uber, Didi, etc."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -48,6 +48,14 @@ dependencies:
   uuid: ^4.5.3
   json_annotation: ^4.11.0
   fl_chart: ^1.2.0
+  shared_preferences: ^2.5.5
+  connectivity_plus: ^7.1.1
+  cached_network_image: ^3.4.1
+  image_picker: ^1.2.2
+  path_provider: ^2.1.5
+  logger: ^2.7.0
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +70,15 @@ dev_dependencies:
   freezed: ^3.2.5
   build_runner: ^2.12.2
   json_serializable: ^6.13.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#0A192F"
+  adaptive_icon_foreground: "assets/images/app_icon_foreground.png"
+  min_sdk_android: 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

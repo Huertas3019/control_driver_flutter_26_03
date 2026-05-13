@@ -14,14 +14,28 @@ class IncomeProvider with ChangeNotifier {
 
   List<Income> _incomes = [];
   bool _isLoading = false;
+  DateTime _selectedDate = DateTime.now();
 
   List<Income> get incomes => _incomes;
   bool get isLoading => _isLoading;
+  DateTime get selectedDate => _selectedDate;
+
+  List<Income> get filteredIncomes {
+    return _incomes.where((income) {
+      return income.date.month == _selectedDate.month &&
+          income.date.year == _selectedDate.year;
+    }).toList();
+  }
 
   IncomeProvider(this._userId) {
     if (_userId != null) {
       fetchIncomes();
     }
+  }
+
+  void updateFilter(DateTime newDate) {
+    _selectedDate = newDate;
+    notifyListeners();
   }
 
   void fetchIncomes() {
